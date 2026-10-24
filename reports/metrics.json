@@ -1,0 +1,106 @@
+{
+  "seed": 42,
+  "test_size": 0.2,
+  "train_count": 2364,
+  "test_count": 591,
+  "class_distribution": {
+    "ham": 2473,
+    "spam": 482
+  },
+  "models": {
+    "Multinomial Naive Bayes": {
+      "accuracy": 0.9238578680203046,
+      "precision": 1.0,
+      "recall": 0.53125,
+      "f1": 0.6938775510204082,
+      "classification_report": {
+        "ham": {
+          "precision": 0.9166666666666666,
+          "recall": 1.0,
+          "f1-score": 0.9565217391304348,
+          "support": 495.0
+        },
+        "spam": {
+          "precision": 1.0,
+          "recall": 0.53125,
+          "f1-score": 0.6938775510204082,
+          "support": 96.0
+        },
+        "accuracy": 0.9238578680203046,
+        "macro avg": {
+          "precision": 0.9583333333333333,
+          "recall": 0.765625,
+          "f1-score": 0.8251996450754215,
+          "support": 591.0
+        },
+        "weighted avg": {
+          "precision": 0.9302030456852792,
+          "recall": 0.9238578680203046,
+          "f1-score": 0.9138587238029178,
+          "support": 591.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          495,
+          0
+        ],
+        [
+          45,
+          51
+        ]
+      ]
+    },
+    "Logistic Regression": {
+      "accuracy": 0.9475465313028765,
+      "precision": 1.0,
+      "recall": 0.6770833333333334,
+      "f1": 0.8074534161490683,
+      "classification_report": {
+        "ham": {
+          "precision": 0.94106463878327,
+          "recall": 1.0,
+          "f1-score": 0.9696376101860921,
+          "support": 495.0
+        },
+        "spam": {
+          "precision": 1.0,
+          "recall": 0.6770833333333334,
+          "f1-score": 0.8074534161490683,
+          "support": 96.0
+        },
+        "accuracy": 0.9475465313028765,
+        "macro avg": {
+          "precision": 0.970532319391635,
+          "recall": 0.8385416666666667,
+          "f1-score": 0.8885455131675801,
+          "support": 591.0
+        },
+        "weighted avg": {
+          "precision": 0.950637895427612,
+          "recall": 0.9475465313028765,
+          "f1-score": 0.9432929695303319,
+          "support": 591.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          495,
+          0
+        ],
+        [
+          31,
+          65
+        ]
+      ]
+    }
+  },
+  "duplicate_audit": {
+    "exact_duplicates_removed_during_preparation": 46,
+    "cross_split_exact_hash_overlap": 0,
+    "near_duplicate_heuristic": "character TF-IDF cosine similarity >= 0.95 using 4-5 character ngrams",
+    "near_duplicate_candidate_pairs": 1440,
+    "near_duplicate_pairs_crossing_train_test": 541,
+    "near_duplicate_pairs_crossing_train_test_with_different_labels": 9
+  }
+}
