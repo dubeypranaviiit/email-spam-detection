@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This project builds a supervised spam classifier and compares Multinomial Naive Bayes, Logistic Regression, Linear SVM and Random Forest. It uses the Apache SpamAssassin Public Mail Corpus, MIME-aware subject/body extraction, TF-IDF, five-fold grouped cross-validation and a separate group-aware holdout. The final run contains 2,955 unique messages. Logistic Regression and Linear SVM each reached spam F1 0.94 on the holdout, compared with 0.64 for Naive Bayes. HTML fallback improved Naive Bayes recall in a controlled ablation but did not improve Logistic Regression recall. Results are specific to this historic corpus and split.
+This project builds a supervised spam classifier and compares Multinomial Naive Bayes, Complement Naive Bayes, Logistic Regression, Linear SVM and Random Forest. It uses the Apache SpamAssassin Public Mail Corpus, MIME-aware subject/body extraction, TF-IDF, five-fold grouped cross-validation and a separate group-aware holdout. The final run contains 2,955 unique messages. Complement Naive Bayes reached spam F1 0.99 on the holdout; Linear SVM had the highest mean CV spam F1 at 0.9469 ± 0.0200. HTML fallback improved Naive Bayes recall in a controlled ablation but did not improve Logistic Regression recall. Results are specific to this historic corpus and split.
 
 ## 1. Problem and objectives
 
@@ -18,11 +18,11 @@ Source: Apache [SpamAssassin Public Mail Corpus](https://spamassassin.apache.org
 | Spam | Spam email | 482 |
 | Total | After exact deduplication | 2,955 |
 
-Body-source audit: 2,788 records used text/plain, 210 used the HTML fallback, and 4 had no text body (a subject could still be present). The source corpus is old, curated and imbalanced; `easy_ham` represents easier legitimate email and does not reflect current inboxes.
+Body-source audit on the 3,002 parsed archive records before duplicate removal: 2,788 used text/plain, 210 used the HTML fallback, and 4 had no text body (a subject could still be present). The source corpus is old, curated and imbalanced; `easy_ham` represents easier legitimate email and does not reflect current inboxes.
 
 ## 3. Method
 
-Subject and body become one text sample. The preparation script computes exact hashes and a character-TF-IDF similarity screen (4–5 character n-grams; cosine at least 0.95). Similar pairs are connected into groups. A reproducible five-fold `StratifiedGroupKFold` creates the final approximately 20% holdout and the training validation folds. A similarity group never crosses the holdout or a CV fold. The final split contains 2,392 training and 563 test messages (456 ham and 107 spam). The computed exact-hash overlap and near-duplicate pair crossing the holdout are both zero.
+Subject and body become one text sample. The preparation script computes exact hashes and a character-TF-IDF similarity screen (4–5 character n-grams; cosine at least 0.95). Similar pairs are connected into groups. A reproducible five-fold `StratifiedGroupKFold` creates the final approximately 20% holdout and the training validation folds. A similarity group never crosses the holdout or a CV fold. The final split contains 2,392 training and 563 test messages (456 ham and 107 spam). The computed exact-hash overlap is zero. The 1,436 near-duplicate candidate pairs do not cross the holdout (guaranteed by the grouped split, not an independent finding).
 
 Every classifier is inside a scikit-learn Pipeline with the same word TF-IDF setup: lowercase, accent stripping, English stop-word filtering, unigrams and bigrams, `min_df=2`, `max_df=0.98`, and sublinear TF. The vectorizer is refit within each training fold. GridSearchCV uses five grouped, stratified folds on the training partition only and chooses parameters by spam F1. The test partition is not used to tune models.
 
@@ -31,6 +31,8 @@ Every classifier is inside a scikit-learn Pipeline with the same word TF-IDF set
 **TF-IDF:** converts words into numeric weights. A word gets more influence when it is useful to a message but less common across the training collection. Classifiers need numbers rather than raw strings.
 
 **Multinomial Naive Bayes:** combines word evidence for each class with a simplifying conditional-independence assumption. CV searches `alpha` smoothing values.
+
+**Complement Naive Bayes:** a Naive Bayes variant that estimates each class using statistics from the other classes; it is often useful with imbalanced text data. CV searches `alpha` smoothing values.
 
 **Logistic Regression:** learns weights for word features and combines them into a linear decision score. CV searches `C` regularization and compares no class weighting with `class_weight="balanced"`.
 
@@ -46,18 +48,20 @@ The table reports observed held-out results. Precision, recall and F1 refer to t
 
 | Model | Accuracy | Precision | Recall | F1 | Mean CV spam F1 |
 |---|---:|---:|---:|---:|---:|
-| Multinomial Naive Bayes | 0.8988 | 1.0000 | 0.4673 | 0.6369 | 0.6053 |
-| Logistic Regression | 0.9787 | 0.9897 | 0.8972 | 0.9412 | 0.9399 |
-| Linear SVM | 0.9787 | 0.9897 | 0.8972 | 0.9412 | 0.9422 |
+| Multinomial Naive Bayes | 0.9911 | 1.0000 | 0.9533 | 0.9761 | 0.9277 |
+| Complement Naive Bayes | 0.9947 | 1.0000 | 0.9720 | 0.9858 | 0.9444 |
+| Logistic Regression | 0.9805 | 0.9898 | 0.9065 | 0.9463 | 0.9452 |
+| Linear SVM | 0.9929 | 1.0000 | 0.9626 | 0.9810 | 0.9469 |
 | Random Forest | 0.9716 | 0.9691 | 0.8785 | 0.9216 | 0.9062 |
 
-Selected CV parameters: Naive Bayes `alpha=0.5`; Logistic Regression `C=0.5`, balanced class weights; Linear SVM `C=0.5`, balanced class weights; Random Forest balanced class weights. The full grid is in `reports/cv_grid_results.csv`.
+Selected CV parameters: Multinomial and Complement Naive Bayes `alpha=0.01`; Logistic Regression `C=10`, balanced class weights; Linear SVM `C=10`, balanced class weights; Random Forest balanced class weights. The NB alpha and linear-model C winners are at the edge of the requested grids; a future run could widen those ranges further. The full grid and fold-level standard deviations are in `reports/cv_grid_results.csv`.
 
-Logistic Regression beat Naive Bayes on all four held-out metrics: accuracy 0.98 vs 0.90, spam precision 0.99 vs 1.00, spam recall 0.90 vs 0.47, and spam F1 0.94 vs 0.64. SVM tied Logistic Regression on this holdout; SVM's mean CV F1 was slightly higher, so one split does not establish a dependable winner between the two. Random Forest also performed strongly. Confusion matrix rows are actual `[ham, spam]` and columns predicted `[ham, spam]`:
+Multinomial Naive Bayes beat Logistic Regression on accuracy (0.99 vs 0.98), spam precision (1.00 vs 0.99), spam recall (0.95 vs 0.91) and spam F1 (0.98 vs 0.95). Complement Naive Bayes achieved the highest holdout F1 (0.99), while Linear SVM had the highest mean CV F1, 0.9469 ± 0.0200. Complement Naive Bayes had mean CV F1 0.9444 ± 0.0099. The holdout winner and CV mean winner differ, and the CV means are close; results do not establish a robust overall winner. Confusion matrix rows are actual `[ham, spam]` and columns predicted `[ham, spam]`:
 
-- Naive Bayes: `[[456, 0], [57, 50]]`
-- Logistic Regression: `[[455, 1], [11, 96]]`
-- Linear SVM: `[[455, 1], [11, 96]]`
+- Naive Bayes: `[[456, 0], [5, 102]]`
+- Complement Naive Bayes: `[[456, 0], [3, 104]]`
+- Logistic Regression: `[[455, 1], [10, 97]]`
+- Linear SVM: `[[456, 0], [4, 103]]`
 - Random Forest: `[[453, 3], [13, 94]]`
 
 ### HTML extraction ablation
@@ -66,14 +70,14 @@ To test whether HTML-only messages explain low recall, both text representations
 
 | Model | Body representation | Spam recall | Spam F1 |
 |---|---|---:|---:|
-| Naive Bayes | Plain text plus HTML fallback | 0.4673 | 0.6369 |
-| Naive Bayes | Plain text only | 0.2243 | 0.3664 |
-| Logistic Regression | Plain text plus HTML fallback | 0.8972 | 0.9412 |
+| Naive Bayes | Plain text plus HTML fallback | 0.9533 | 0.9761 |
+| Naive Bayes | Plain text only | 0.7850 | 0.8796 |
+| Logistic Regression | Plain text plus HTML fallback | 0.9065 | 0.9463 |
 | Logistic Regression | Plain text only | 0.9159 | 0.9561 |
 
-The hypothesis is **partly supported**: HTML fallback more than doubled Naive Bayes recall, but Logistic Regression recall was slightly lower with HTML fallback on this split. HTML-only messages are an important preprocessing case, but HTML extraction alone does not explain low recall for every classifier. Results are available in `reports/html_ablation.csv`.
+The hypothesis is **partly supported**: HTML fallback raised Naive Bayes recall from 0.79 to 0.95, but Logistic Regression recall was slightly lower with HTML fallback on this split. HTML-only messages are an important preprocessing case, but HTML extraction alone does not explain low recall for every classifier. Results are available in `reports/html_ablation.csv`.
 
-The near-duplicate screen found 1,436 candidate pairs at the chosen threshold. Connected groups were kept together across holdout and CV folds; no candidate pair crossed the holdout. This grouping heuristic may miss semantically related messages or over-group boilerplate, so independent time-based/current-corpus validation remains necessary.
+The near-duplicate screen found 1,436 candidate pairs at the chosen threshold. No near-duplicate pair crossed the holdout (guaranteed by the grouped split, not an independent finding). Connected groups were also supplied to all CV folds. This heuristic may miss semantically related messages or group boilerplate, so independent time-based/current-corpus validation remains necessary.
 
 ## 5. Application
 
@@ -87,4 +91,4 @@ Aggregate outputs include `reports/metrics.json`, `reports/model_comparison.csv`
 
 ## 7. Conclusion and future work
 
-On this group-aware holdout, Logistic Regression beat Naive Bayes on accuracy, spam precision, recall and F1; its spam F1 was 0.94 compared with Naive Bayes at 0.64. Linear SVM matched Logistic Regression on the test metrics, while having a slightly higher mean CV F1. Balanced class weights and grouped validation address the earlier recall and duplicate-leakage concerns. HTML fallback materially improved Naive Bayes recall but did not improve Logistic Regression recall in this run. The historical corpus and single holdout limit generalization. Next steps are testing on an independent newer email dataset, time-based validation, threshold/calibration analysis on validation data, and stronger MIME/header features. A large transformer model is outside the scope of this small corpus and beginner-friendly classical comparison.
+On this group-aware holdout, Complement Naive Bayes had the highest spam F1 (0.99). Multinomial Naive Bayes scored accuracy 0.99, precision 1.00, recall 0.95 and F1 0.98; Logistic Regression scored 0.98, 0.99, 0.91 and 0.95, respectively. Linear SVM had the highest mean CV F1 at 0.9469 ± 0.0200. The best CV F1 and best holdout F1 belong to different models, so the results do not support a single robust winner. HTML fallback materially improved Naive Bayes recall but did not improve Logistic Regression recall in this run. The historical corpus and one holdout limit generalization. Next steps are testing on an independent newer email dataset, time-based validation, threshold/calibration analysis on validation data, and stronger MIME/header features. A large transformer model is outside the scope of this small corpus and beginner-friendly classical comparison.

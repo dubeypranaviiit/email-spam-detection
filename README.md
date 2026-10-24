@@ -1,6 +1,6 @@
 # PS: 6.6 — Email Spam Detection Using Machine Learning
 
-This beginner project compares **Multinomial Naive Bayes**, **Logistic Regression**, **Linear SVM**, and **Random Forest** for classifying real email as **Spam (1)** or **Ham (0)**. They use the same TF-IDF features and group-aware holdout. Five-fold grouped CV tunes models on training data only. The project does not claim a new algorithm; its contribution is a transparent comparison and demonstration app.
+This beginner project compares **Multinomial Naive Bayes**, **Complement Naive Bayes**, **Logistic Regression**, **Linear SVM**, and **Random Forest** for classifying real email as **Spam (1)** or **Ham (0)**. They use the same TF-IDF features and group-aware holdout. Five-fold grouped CV tunes models on training data only. The project does not claim a new algorithm; its contribution is a transparent comparison and demonstration app.
 
 ## Dataset
 
@@ -14,7 +14,7 @@ We use the Apache [SpamAssassin Public Mail Corpus](https://spamassassin.apache.
 | Cleaning and labels | Skips empty/broken messages, joins subject/body, removes exact duplicate content, and assigns labels from corpus folders. | Prevents duplicate examples and label guessing. *Q: Could a duplicate affect scores?* Yes, if copies land in both train and test. |
 | Grouped stratified split | Reserves about 20% for a final evaluation while keeping near-duplicate groups together. | Estimates unseen performance without placing similar templates in both sets. *Q: Why group?* Near copies can inflate scores if split across train and test. |
 | TF-IDF | Turns words and word pairs into numeric weights; frequent-in-one-email but less-common-in-corpus terms receive more weight. | Classifiers need numbers, not raw text. Fit occurs inside each pipeline using training messages only. *Q: What prevents vectorizer leakage?* `Pipeline.fit` sees only X_train. |
-| Multinomial Naive Bayes | Scores each class using word evidence and a simplifying conditional-independence assumption. | Fast, strong text baseline. *Q: Why smoothing?* The selected `alpha=0.5` avoids zero likelihood for unseen terms. |
+| Multinomial / Complement Naive Bayes | Estimate spam/ham from word evidence; Complement NB uses evidence from the other classes and can help with imbalance. | Fast text baselines. CV selected `alpha=0.01` for both in this run; wider alpha values can be tried next. |
 | Logistic Regression and Linear SVM | Learn linear boundaries over TF-IDF features; CV compares regularization and class weighting to help minority spam recall. | Strong text classifiers. *Q: What does `class_weight="balanced"` do?* It gives more weight to errors on the smaller spam class. |
 | Random Forest | Combines decision trees. | Adds a nonlinear tree-based comparison. |
 | Evaluation | Uses grouped, stratified five-fold CV for training-only grid search, then reports accuracy, spam precision/recall/F1, confusion matrices and local error samples. | A single accuracy number can hide missed spam and false alarms. *Q: What is a false positive?* A ham message incorrectly marked spam. |
@@ -38,11 +38,11 @@ If PowerShell blocks environment activation, use `Set-ExecutionPolicy -Scope Cur
 
 ## Results
 
-Observed run: 2,392 train and 563 test messages. Naive Bayes accuracy/precision/recall/F1 = 0.8988/1.0000/0.4673/0.6369; Logistic Regression = 0.9787/0.9897/0.8972/0.9412; Linear SVM = 0.9787/0.9897/0.8972/0.9412; Random Forest = 0.9716/0.9691/0.8785/0.9216. Logistic Regression beat Naive Bayes on all four measures; SVM tied LR on this holdout. The complete metrics and confusion matrices are in `reports/metrics.json`.
+Observed run: 2,392 train and 563 test messages. Accuracy / spam precision / spam recall / spam F1: Multinomial NB = 0.9911 / 1.0000 / 0.9533 / 0.9761; Complement NB = 0.9947 / 1.0000 / 0.9720 / 0.9858; Logistic Regression = 0.9805 / 0.9898 / 0.9065 / 0.9463; Linear SVM = 0.9929 / 1.0000 / 0.9626 / 0.9810; Random Forest = 0.9716 / 0.9691 / 0.8785 / 0.9216. Multinomial NB beat Logistic Regression on accuracy (0.99 vs 0.98), recall (0.95 vs 0.91), and F1 (0.98 vs 0.95); its precision was also slightly higher (1.00 vs 0.99). Complement NB had the top holdout F1; Linear SVM had the top mean CV F1. The complete metrics and confusion matrices are in `reports/metrics.json`.
 
-Five-fold StratifiedGroupKFold CV tunes all hyperparameters on the training partition only; spam F1 is the selection metric. Near-duplicate components stay within one holdout/CV partition. The computed exact-duplicate and near-duplicate overlap across the holdout was zero. Grid results are in `reports/cv_grid_results.csv`.
+Five-fold StratifiedGroupKFold CV tunes all hyperparameters on the training partition only; spam F1 is the selection metric. Linear SVM's best configuration had mean CV spam F1 **0.9469 ± 0.0200** across folds. Complement NB's best configuration had 0.9444 ± 0.0099. Near-duplicate components stay within one holdout/CV partition; zero crossing is guaranteed by the grouped split, not an independent finding. Grid results are in `reports/cv_grid_results.csv`.
 
-**HTML extraction ablation:** Naive Bayes recall was 0.47 with HTML fallback versus 0.22 without it. Logistic Regression was 0.90 with HTML fallback and 0.92 without it. The hypothesis is partly supported: HTML helps NB on this split but does not explain LR recall. Both representations use the same holdout and are tuned independently by training-only CV. Details are in `reports/html_ablation.csv`.
+**HTML extraction ablation:** Multinomial NB recall was 0.9533 with HTML fallback versus 0.7850 without it. Logistic Regression was 0.9065 with fallback and 0.9159 without it. The hypothesis is model-dependent: HTML helped NB but did not raise LR recall. Both representations use the same holdout and are tuned independently by training-only CV. Details are in `reports/html_ablation.csv`.
 
 ## Files
 

@@ -22,7 +22,7 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.model_selection import GridSearchCV, StratifiedGroupKFold
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import ComplementNB, MultinomialNB
 from sklearn.pipeline import Pipeline
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
@@ -51,15 +51,19 @@ def model_searches():
     models = {
         "Multinomial Naive Bayes": (
             MultinomialNB(),
-            {"classifier__alpha": [0.5, 1.0]},
+            {"classifier__alpha": [0.01, 0.05, 0.1, 0.5, 1.0]},
+        ),
+        "Complement Naive Bayes": (
+            ComplementNB(),
+            {"classifier__alpha": [0.01, 0.05, 0.1, 0.5, 1.0]},
         ),
         "Logistic Regression": (
             LogisticRegression(max_iter=1500, solver="liblinear", random_state=SEED),
-            {"classifier__C": [0.5, 2.0], "classifier__class_weight": [None, "balanced"]},
+            {"classifier__C": [0.1, 0.5, 2.0, 10.0], "classifier__class_weight": [None, "balanced"]},
         ),
         "Linear SVM": (
             LinearSVC(random_state=SEED),
-            {"classifier__C": [0.5, 2.0], "classifier__class_weight": [None, "balanced"]},
+            {"classifier__C": [0.1, 0.5, 2.0, 10.0], "classifier__class_weight": [None, "balanced"]},
         ),
         "Random Forest": (
             RandomForestClassifier(n_estimators=120, max_features="sqrt", random_state=SEED, n_jobs=1),
@@ -162,6 +166,7 @@ def main():
         rows.append({"model": name, **metrics, "cv_best_f1": float(search.best_score_)})
         tag = {
             "Multinomial Naive Bayes": "naive_bayes",
+            "Complement Naive Bayes": "complement_nb",
             "Logistic Regression": "logistic_regression",
             "Linear SVM": "linear_svm",
             "Random Forest": "random_forest",

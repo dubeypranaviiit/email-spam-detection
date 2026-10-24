@@ -1,13 +1,29 @@
 model,parameters,mean_cv_spam_f1,std_cv_spam_f1,rank
-Multinomial Naive Bayes,"{""classifier__alpha"": 0.5}",0.6052968043537743,0.06927385892190077,1
-Multinomial Naive Bayes,"{""classifier__alpha"": 1.0}",0.4081865194110305,0.08816645470924499,2
-Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.4286975661441593,0.09098647014360359,4
-Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9398953025512382,0.024231299343137343,1
-Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.8450626248005282,0.04374702139981974,3
-Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9396919904781468,0.02349141752402132,2
-Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.9165861344956296,0.031601566325381185,4
-Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9422189174406738,0.017198644430082084,1
-Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.9350634793040987,0.026625964146677828,3
-Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9403648645010747,0.0199144341282528,2
+Multinomial Naive Bayes,"{""classifier__alpha"": 0.01}",0.9277164693514282,0.011173269404499047,1
+Multinomial Naive Bayes,"{""classifier__alpha"": 0.05}",0.9158240777259637,0.017481652826651643,2
+Multinomial Naive Bayes,"{""classifier__alpha"": 0.1}",0.8994921903524048,0.022280403428478444,3
+Multinomial Naive Bayes,"{""classifier__alpha"": 0.5}",0.6052968043537743,0.06927385892190077,4
+Multinomial Naive Bayes,"{""classifier__alpha"": 1.0}",0.4081865194110305,0.08816645470924499,5
+Complement Naive Bayes,"{""classifier__alpha"": 0.01}",0.9444301520525988,0.009880252197367835,1
+Complement Naive Bayes,"{""classifier__alpha"": 0.05}",0.9417411658616371,0.012425280543468045,2
+Complement Naive Bayes,"{""classifier__alpha"": 0.1}",0.938602428848023,0.013658151686853514,3
+Complement Naive Bayes,"{""classifier__alpha"": 0.5}",0.7935009826468262,0.050938059366190884,4
+Complement Naive Bayes,"{""classifier__alpha"": 1.0}",0.6841080289927295,0.056577480385242004,5
+Logistic Regression,"{""classifier__C"": 0.1, ""classifier__class_weight"": null}",0.0,0.0,8
+Logistic Regression,"{""classifier__C"": 0.1, ""classifier__class_weight"": ""balanced""}",0.9354484412487297,0.03163202724058942,4
+Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.4286975661441593,0.09098647014360359,7
+Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9398953025512382,0.024231299343137343,2
+Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.8450626248005282,0.04374702139981974,6
+Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9396919904781468,0.02349141752402132,3
+Logistic Regression,"{""classifier__C"": 10.0, ""classifier__class_weight"": null}",0.9087710542604851,0.03155980179338671,5
+Logistic Regression,"{""classifier__C"": 10.0, ""classifier__class_weight"": ""balanced""}",0.9452239661746704,0.018042579180203872,1
+Linear SVM,"{""classifier__C"": 0.1, ""classifier__class_weight"": null}",0.7676544712840307,0.07975280375014232,8
+Linear SVM,"{""classifier__C"": 0.1, ""classifier__class_weight"": ""balanced""}",0.9382168946927061,0.02378540487624882,5
+Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.9165861344956296,0.031601566325381185,7
+Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9422189174406738,0.017198644430082084,2
+Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.9350634793040987,0.026625964146677828,6
+Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9403648645010747,0.0199144341282528,3
+Linear SVM,"{""classifier__C"": 10.0, ""classifier__class_weight"": null}",0.938495830410724,0.020286647364329405,4
+Linear SVM,"{""classifier__C"": 10.0, ""classifier__class_weight"": ""balanced""}",0.9468955004881282,0.02004172767398854,1
 Random Forest,"{""classifier__class_weight"": null}",0.8841941839128002,0.04583346549158165,2
 Random Forest,"{""classifier__class_weight"": ""balanced""}",0.9061720615094397,0.032725121774236775,1
