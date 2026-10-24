@@ -2,11 +2,14 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.cache/
 data/raw/
 data/processed/
 models/*.joblib
 reports/*
 !reports/metrics.json
 !reports/model_comparison.csv
+!reports/cv_grid_results.csv
+!reports/html_ablation.csv
 !reports/model_comparison.png
 !reports/*_confusion_matrix.png

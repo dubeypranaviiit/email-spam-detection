@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import io
 import tarfile
 import urllib.request
 from email import policy
@@ -17,18 +16,41 @@ BASE = "https://spamassassin.apache.org/old/publiccorpus/"
 ARCHIVES = {"20030228_easy_ham.tar.bz2": 0, "20030228_spam.tar.bz2": 1}
 
 def text_body(msg):
-    parts = []
-    if msg.is_multipart():
-        for part in msg.walk():
-            if part.get_content_maintype() == "multipart" or part.get_content_disposition() == "attachment":
-                continue
-            if part.get_content_type() == "text/plain":
-                try: parts.append(part.get_content())
-                except Exception: pass
-    else:
-        try: parts.append(msg.get_content())
-        except Exception: pass
-    return "\n".join(p if isinstance(p, str) else str(p) for p in parts)
+    """Return readable body text and the selected MIME representation.
+
+    Prefer text/plain when present to avoid duplicate text from
+    multipart/alternative messages. Fall back to HTML text when needed.
+    Attachments and non-text MIME parts are ignored.
+    """
+    from bs4 import BeautifulSoup
+
+    plain_parts = []
+    html_parts = []
+    parts = msg.walk() if msg.is_multipart() else [msg]
+    for part in parts:
+        if part.get_content_maintype() == "multipart" or part.get_content_disposition() == "attachment":
+            continue
+        if part.get_content_type() not in {"text/plain", "text/html"}:
+            continue
+        try:
+            content = part.get_content()
+        except Exception:
+            continue
+        if not isinstance(content, str):
+            content = str(content)
+        if part.get_content_type() == "text/plain":
+            plain_parts.append(content)
+        else:
+            html_parts.append(content)
+
+    if plain_parts:
+        return "\n".join(plain_parts), "text/plain"
+    if html_parts:
+        soup = BeautifulSoup("\n".join(html_parts), "html.parser")
+        for element in soup(["script", "style", "noscript"]):
+            element.decompose()
+        return soup.get_text(" ", strip=True), "text/html"
+    return "", "no_text_body"
 
 def main():
     ap = argparse.ArgumentParser()
@@ -36,6 +58,7 @@ def main():
     args = ap.parse_args()
     RAW.mkdir(parents=True, exist_ok=True)
     records = []
+    body_source_counts = {"text/plain": 0, "text/html": 0, "no_text_body": 0}
     for archive, label in ARCHIVES.items():
         path = RAW / archive
         if not args.local and not path.exists():
@@ -51,12 +74,17 @@ def main():
                 try:
                     msg = BytesParser(policy=policy.default).parsebytes(f.read())
                     subject = str(msg.get("subject", "") or "").strip()
-                    body = text_body(msg).strip()
+                    body, body_source = text_body(msg)
+                    body = body.strip()
+                    body_source_counts[body_source] += 1
                     content = (subject + "\n" + body).strip()
                     if not content: continue
+                    plain_only_content = (subject + "\n" + (body if body_source == "text/plain" else "")).strip()
                     norm = " ".join(content.casefold().split())
-                    records.append({"subject": subject, "body": body, "text": content, "label": label,
+                    records.append({"subject": subject, "body": body, "text": content,
+                                    "text_without_html_fallback": plain_only_content, "label": label,
                                     "label_name": "spam" if label else "ham", "source_file": member.name,
+                                    "body_source": body_source,
                                     "content_hash": hashlib.sha256(norm.encode("utf-8", "ignore")).hexdigest()})
                 except Exception as exc:
                     print(f"Skipping malformed record {member.name}: {exc}")
@@ -94,6 +122,7 @@ def main():
         "ambiguous_cross_label_duplicate_records_excluded": conflicting_records,
         "usable_records_after_deduplication": len(df),
         "class_counts": {"ham": int((df.label == 0).sum()), "spam": int((df.label == 1).sum())},
+        "parsed_body_source_counts": body_source_counts,
         "near_duplicate_pairs_at_char_tfidf_cosine_0_95": len(pairs)
     }, indent=2), encoding="utf-8")
     print(f"Parsed {before}; excluded {conflicting_records} records in cross-label exact-duplicate groups; removed {before_dedup-len(df)} duplicate copies; saved {len(df)} to {OUT}")

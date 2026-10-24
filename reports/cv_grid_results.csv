@@ -1,0 +1,13 @@
+model,parameters,mean_cv_spam_f1,std_cv_spam_f1,rank
+Multinomial Naive Bayes,"{""classifier__alpha"": 0.5}",0.6052968043537743,0.06927385892190077,1
+Multinomial Naive Bayes,"{""classifier__alpha"": 1.0}",0.4081865194110305,0.08816645470924499,2
+Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.4286975661441593,0.09098647014360359,4
+Logistic Regression,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9398953025512382,0.024231299343137343,1
+Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.8450626248005282,0.04374702139981974,3
+Logistic Regression,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9396919904781468,0.02349141752402132,2
+Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": null}",0.9165861344956296,0.031601566325381185,4
+Linear SVM,"{""classifier__C"": 0.5, ""classifier__class_weight"": ""balanced""}",0.9422189174406738,0.017198644430082084,1
+Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": null}",0.9350634793040987,0.026625964146677828,3
+Linear SVM,"{""classifier__C"": 2.0, ""classifier__class_weight"": ""balanced""}",0.9403648645010747,0.0199144341282528,2
+Random Forest,"{""classifier__class_weight"": null}",0.8841941839128002,0.04583346549158165,2
+Random Forest,"{""classifier__class_weight"": ""balanced""}",0.9061720615094397,0.032725121774236775,1
