@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Run & Debug API",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["api.main:app", "--host", "127.0.0.1", "--port", "8000", "--reload"],
+      "jinja": true,
+      "justMyCode": true
+    },
+    {
+      "name": "Streamlit: Run App",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "streamlit",
+      "args": ["run", "app.py"],
+      "justMyCode": true
+    },
+    {
+      "name": "Pytest: Run All Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-v"],
+      "justMyCode": true
+    }
+  ]
+}

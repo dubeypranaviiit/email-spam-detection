@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "1. Start Backend API",
+      "type": "shell",
+      "command": "uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "spam-servers",
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "2. Start Next.js Dashboard",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/web"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "spam-servers",
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Run All Tests",
+      "type": "shell",
+      "command": "pytest",
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Pipeline (Train & Explain)",
+      "type": "shell",
+      "command": "python scripts/build_all.py",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Start Streamlit App",
+      "type": "shell",
+      "command": "streamlit run app.py",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
