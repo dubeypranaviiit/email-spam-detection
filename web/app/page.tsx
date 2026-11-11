@@ -29,16 +29,23 @@ export default function OverviewPage() {
   const [data, setData] = useState<MetricsBundleResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<string>("Complement NB");
+  const [selectedModel, setSelectedModel] = useState<string>("Complement Naive Bayes");
 
   useEffect(() => {
     api
       .getMetrics()
       .then((res) => {
         setData(res);
-        if (res.summary?.best_overall_holdout_model) {
-          setSelectedModel(res.summary.best_overall_holdout_model);
+        const modelsMap = res.summary?.models || {};
+        let bestName = "Complement Naive Bayes";
+        let bestF1 = 0;
+        for (const [name, m] of Object.entries(modelsMap) as [string, any][]) {
+          if (m?.f1 > bestF1) {
+            bestF1 = m.f1;
+            bestName = name;
+          }
         }
+        setSelectedModel(bestName);
         setLoading(false);
       })
       .catch((err) => {
@@ -82,19 +89,32 @@ export default function OverviewPage() {
   }
 
   const { summary, model_comparison } = data;
-  const bestModelMetric = summary.per_model[summary.best_overall_holdout_model] || Object.values(summary.per_model)[0];
-  const activeMetric: ModelMetric = summary.per_model[selectedModel] || bestModelMetric;
+  const modelsMap: Record<string, any> = summary?.models || {};
+  const modelNames = Object.keys(modelsMap);
+
+  let bestModelName = "Complement Naive Bayes";
+  let bestF1 = 0;
+  for (const [name, m] of Object.entries(modelsMap) as [string, any][]) {
+    if (m?.f1 > bestF1) {
+      bestF1 = m.f1;
+      bestModelName = name;
+    }
+  }
+
+  const bestModelMetric = modelsMap[bestModelName] || Object.values(modelsMap)[0] || {};
+  const activeMetric = modelsMap[selectedModel] || bestModelMetric;
 
   // Chart data formatting
-  const chartData = model_comparison.map((m) => ({
+  const chartData = (model_comparison || []).map((m: any) => ({
     name: m.model,
     Precision: parseFloat((m.precision * 100).toFixed(1)),
     Recall: parseFloat((m.recall * 100).toFixed(1)),
     F1: parseFloat((m.f1 * 100).toFixed(1)),
   }));
 
-  const [[tn, fp], [fn, tp]] = activeMetric.confusion_matrix;
-  const total = tn + fp + fn + tp;
+  const cm = activeMetric.confusion_matrix || [[0, 0], [0, 0]];
+  const [[tn, fp], [fn, tp]] = cm;
+  const total = tn + fp + fn + tp || 1;
 
   return (
     <div className="space-y-8">
@@ -126,9 +146,9 @@ export default function OverviewPage() {
             <span className="text-xs uppercase tracking-wider font-semibold">Best Classifier</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-xl font-bold text-foreground truncate">{summary.best_overall_holdout_model}</div>
+          <div className="text-xl font-bold text-foreground truncate">{bestModelName}</div>
           <div className="text-xs text-muted-foreground mt-1">
-            Holdout F1: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatPercent(summary.best_overall_holdout_f1)}</span>
+            Holdout F1: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatPercent(bestModelMetric.f1)}</span>
           </div>
         </div>
 
@@ -214,7 +234,7 @@ export default function OverviewPage() {
               onChange={(e) => setSelectedModel(e.target.value)}
               className="text-xs bg-secondary border border-border rounded px-2 py-1 text-foreground focus:ring-1 focus:ring-primary"
             >
-              {Object.keys(summary.per_model).map((m) => (
+              {modelNames.map((m) => (
                 <option key={m} value={m}>
                   {m}
                 </option>
@@ -246,8 +266,8 @@ export default function OverviewPage() {
           </div>
 
           <div className="text-xs text-muted-foreground border-t border-border pt-3 space-y-1">
-            <div><span className="font-semibold text-foreground">Selected Params:</span> <code className="font-mono text-[11px]">{JSON.stringify(activeMetric.best_params)}</code></div>
-            <div><span className="font-semibold text-foreground">Training Time:</span> {formatDec(activeMetric.train_fit_time_seconds, 2)}s</div>
+            <div><span className="font-semibold text-foreground">CV Best Params:</span> <code className="font-mono text-[11px]">{JSON.stringify(activeMetric.cv_best_parameters || {})}</code></div>
+            <div><span className="font-semibold text-foreground">CV Best F1:</span> {formatPercent(activeMetric.cv_best_spam_f1)}</div>
           </div>
         </div>
 

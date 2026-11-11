@@ -22,11 +22,13 @@ export interface ModelsResponse {
 }
 
 export interface MetricsSummary {
-  holdout_test_size: number;
-  cv_folds: number;
-  best_overall_holdout_model: string;
-  best_overall_holdout_f1: number;
-  per_model: Record<string, ModelMetric>;
+  seed: number;
+  test_size: number;
+  train_count: number;
+  test_count: number;
+  cv: Record<string, any>;
+  class_distribution: { ham: number; spam: number };
+  models: Record<string, any>;
 }
 
 export interface MetricsBundleResponse {
