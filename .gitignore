@@ -20,3 +20,5 @@ reports/*_errors.csv
 reports/explain/*_errors.csv
 .next/
 node_modules/
+scratch/
+

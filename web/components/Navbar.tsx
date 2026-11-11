@@ -44,6 +44,9 @@ export function Navbar() {
     { href: "/", label: "Overview" },
     { href: "/detector", label: "Live Detector" },
     { href: "/explainability", label: "Explainability" },
+    { href: "/errors", label: "Error Analysis" },
+    { href: "/methodology", label: "Methodology" },
+    { href: "/about", label: "About & Novelty" },
   ];
 
   return (
