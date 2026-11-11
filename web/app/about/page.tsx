@@ -83,14 +83,14 @@ export default function AboutNoveltyPage() {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-foreground flex items-center space-x-2">
                 <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">B</span>
-                <span>Fair Hyperparameter Tuning &amp; Complement NB Threshold Proof</span>
+                <span>Fair Hyperparameter Tuning &amp; Complement NB Threshold Derivation</span>
               </h3>
               <span className="text-[11px] font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded">
-                Mathematical Proof
+                Analytical Derivation
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Naive Bayes is frequently reported as &ldquo;weak&rdquo; solely because papers evaluate it with arbitrary smoothing defaults (&alpha;=1.0). Widening the search grid to &alpha;=0.01 boosted holdout F1 from 0.64 to 0.98. Furthermore, we mathematically proved that in binary classification with unnormalized weights, Complement NB and Multinomial NB have <strong>identical feature weights</strong> (<code className="font-mono text-[11px]">w_j^(CNB) ≡ w_j^(MNB)</code>). CNB&apos;s holdout edge is strictly a decision threshold calibration advantage ($b=0$ vs prior log-odds), not superior feature modeling.
+              In our own first run, a narrow smoothing grid made Naive Bayes look weak (F1 0.64). Widening the grid to &alpha;=0.01 raised it to 0.98. Furthermore, we showed analytically that in binary classification with unnormalized weights, Complement NB and Multinomial NB have <strong>identical feature weights</strong> (<code className="font-mono text-[11px]">w_j^(CNB) ≡ w_j^(MNB)</code>). CNB&apos;s holdout edge is strictly a decision threshold calibration advantage ($b=0$ vs prior log-odds), not superior feature modeling.
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export default function AboutNoveltyPage() {
           Global term extraction revealed critical dataset artifacts: the top ham-indicating features across all 5 models are terms like <code className="font-mono text-[11px]">rpm</code>, <code className="font-mono text-[11px]">wrote</code>, <code className="font-mono text-[11px]">users</code>, <code className="font-mono text-[11px]">spambayes</code>, <code className="font-mono text-[11px]">razor</code>, and <code className="font-mono text-[11px]">2002</code>.
         </p>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          These terms reflect the specific technical open-source mailing lists (Red Hat Linux packaging, Razor spam tracking) from which legitimate emails were collected. Models achieve &gt;99% accuracy partly by exploiting these corpus-era shortcuts rather than universal properties of legitimate communication. This empirical finding provides a valuable cautionary insight for real-world spam filter deployment.
+          These terms reflect the specific technical open-source mailing lists (Red Hat Linux packaging, Razor spam tracking) from which legitimate emails were collected. Models achieve 97% to 99.5% accuracy partly by exploiting these corpus-era shortcuts rather than universal properties of legitimate communication. This empirical finding provides a valuable cautionary insight for real-world spam filter deployment.
         </p>
       </div>
 
