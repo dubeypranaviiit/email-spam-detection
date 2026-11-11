@@ -110,14 +110,14 @@ export interface DeletionTestResult {
   random_score_drop_ci_high: number;
   score_drop_diff: number;
   score_win_rate_pct: number;
-  n_evaluated: number;
-  sample_description: string;
+  n_evaluated?: number;
+  sample_description?: string;
 }
 
 export interface MethodAgreementResult {
   comparison: string;
   n_emails: number;
-  feature_set: string;
+  feature_set?: string;
   spearman_rho_mean: number;
   top5_jaccard_mean: number;
   top10_jaccard_mean: number;
@@ -125,8 +125,10 @@ export interface MethodAgreementResult {
 }
 
 export interface FaithfulnessResponse {
-  deletion_tests: DeletionTestResult[];
-  method_agreement: MethodAgreementResult[];
+  experimental_setup?: Record<string, any>;
+  methodological_hypotheses?: Record<string, any>;
+  deletion_tests: Record<string, any> | DeletionTestResult[];
+  method_agreement: Record<string, any> | MethodAgreementResult[];
 }
 
 export interface ErrorAnalysisSummary {

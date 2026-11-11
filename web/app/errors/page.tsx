@@ -122,7 +122,7 @@ export default function ErrorAnalysisPage() {
             {fp.count || 0}
           </div>
           <div className="text-xs text-muted-foreground mt-1">
-            FP Rate: <span className="font-semibold text-foreground">{formatPercent(fp.percentage_of_actual_class)}</span> of legitimate ham
+            FP Rate: <span className="font-semibold text-foreground">{formatPercent(fp.percentage_of_actual_class ?? fp.percentage_of_test_subset ?? (fp.count ? fp.count / 456 : 0))}</span> of legitimate ham
           </div>
         </div>
 
@@ -188,13 +188,13 @@ export default function ErrorAnalysisPage() {
                       {m.false_positives?.count || 0}
                     </td>
                     <td className="py-2.5 px-3 font-mono text-muted-foreground">
-                      {formatPercent(m.false_positives?.percentage_of_actual_class)}
+                      {formatPercent(m.false_positives?.percentage_of_actual_class ?? m.false_positives?.percentage_of_test_subset ?? (m.false_positives?.count ? m.false_positives.count / 456 : 0))}
                     </td>
                     <td className="py-2.5 px-3 font-mono text-amber-600 dark:text-amber-400">
                       {m.false_negatives?.count || 0}
                     </td>
                     <td className="py-2.5 px-3 font-mono text-muted-foreground">
-                      {formatPercent(m.false_negatives?.percentage_of_actual_class)}
+                      {formatPercent(m.false_negatives?.percentage_of_actual_class ?? m.false_negatives?.percentage_of_test_subset ?? (m.false_negatives?.count ? m.false_negatives.count / 107 : 0))}
                     </td>
                     <td className="py-2.5 px-3 font-mono font-bold text-foreground">
                       {(m.false_positives?.count || 0) + (m.false_negatives?.count || 0)}

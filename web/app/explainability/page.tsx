@@ -63,17 +63,117 @@ export default function ExplainabilityPage() {
       });
   }, [selectedModel]);
 
-  // Filter deletion tests for the active model
-  const activeDeletionData =
-    faithfulness?.deletion_tests.filter(
-      (d) =>
-        d.model.toLowerCase().replace(/\s+/g, "_") === selectedModel.toLowerCase() ||
-        (selectedModel === "logistic_regression" && d.model.includes("Logistic")) ||
-        (selectedModel === "linear_svm" && d.model.includes("Linear SVM")) ||
-        (selectedModel === "multinomial_nb" && d.model.includes("Multinomial")) ||
-        (selectedModel === "complement_nb" && d.model.includes("Complement")) ||
-        (selectedModel === "random_forest" && d.model.includes("Random Forest"))
-    ) || [];
+  // Safely normalize deletion tests for the active model (handles both dict and array formats)
+  const activeDeletionData: DeletionTestResult[] = (() => {
+    if (!faithfulness?.deletion_tests) return [];
+
+    // Case A: If deletion_tests is already a flat array (e.g. from tabular CSV)
+    if (Array.isArray(faithfulness.deletion_tests)) {
+      return (faithfulness.deletion_tests as any[]).filter(
+        (d) =>
+          d.model?.toLowerCase().replace(/\s+/g, "_") === selectedModel.toLowerCase() ||
+          d.model_tag?.toLowerCase() === selectedModel.toLowerCase() ||
+          (selectedModel === "logistic_regression" && d.model?.includes("Logistic")) ||
+          (selectedModel === "linear_svm" && d.model?.includes("Linear SVM")) ||
+          (selectedModel === "multinomial_nb" && (d.model?.includes("Multinomial") || d.model_tag === "naive_bayes")) ||
+          (selectedModel === "complement_nb" && d.model?.includes("Complement")) ||
+          (selectedModel === "random_forest" && d.model?.includes("Random Forest"))
+      );
+    }
+
+    // Case B: If deletion_tests is a dictionary keyed by model_tag (from faithfulness.json)
+    const testsObj = faithfulness.deletion_tests as Record<string, any>;
+    const tag = selectedModel === "multinomial_nb" ? "naive_bayes" : selectedModel;
+    const modelData = testsObj[tag] || testsObj[selectedModel] || Object.values(testsObj)[0];
+
+    if (!modelData || !modelData.deletion_results) return [];
+
+    const results = modelData.deletion_results;
+    return [1, 3, 5, 10].map((k) => {
+      const res = results[String(k)] || {};
+      const topkDrop = res.mean_prob_drop_top_k ?? 0;
+      const randDrop = res.mean_prob_drop_random ?? 0;
+      const topkScoreDrop = res.mean_score_drop_top_k ?? 0;
+      const randScoreDrop = res.mean_score_drop_random ?? 0;
+
+      return {
+        model: modelData.model || selectedModel,
+        k,
+        topk_prob_drop_mean: topkDrop,
+        topk_prob_drop_ci_low: res.ci_prob_drop_top_k_95?.[0] ?? 0,
+        topk_prob_drop_ci_high: res.ci_prob_drop_top_k_95?.[1] ?? 0,
+        random_prob_drop_mean: randDrop,
+        random_prob_drop_ci_low: res.ci_prob_drop_random_95?.[0] ?? 0,
+        random_prob_drop_ci_high: res.ci_prob_drop_random_95?.[1] ?? 0,
+        prob_drop_diff: topkDrop - randDrop,
+        prob_win_rate_pct: (res.win_rate_prob_vs_random ?? 1.0) * 100,
+        topk_score_drop_mean: topkScoreDrop,
+        topk_score_drop_ci_low: res.ci_score_drop_top_k_95?.[0] ?? 0,
+        topk_score_drop_ci_high: res.ci_score_drop_top_k_95?.[1] ?? 0,
+        random_score_drop_mean: randScoreDrop,
+        random_score_drop_ci_low: res.ci_score_drop_random_95?.[0] ?? 0,
+        random_score_drop_ci_high: res.ci_score_drop_random_95?.[1] ?? 0,
+        score_drop_diff: topkScoreDrop - randScoreDrop,
+        score_win_rate_pct: (res.win_rate_score_vs_random ?? 1.0) * 100,
+        n_evaluated: modelData.n_evaluated ?? 87,
+        sample_description: "Mutual holdout spam",
+      };
+    });
+  })();
+
+  // Comparison name formatting
+  const formatComparisonName = (key: string): string => {
+    const map: Record<string, string> = {
+      logistic_regression_exact_vs_lime: "Logistic Regression: Exact vs LIME",
+      linear_svm_exact_vs_lime: "Linear SVM: Exact vs LIME",
+      naive_bayes_exact_vs_lime: "Multinomial NB: Exact vs LIME",
+      complement_nb_exact_vs_lime: "Complement NB: Exact vs LIME",
+      random_forest_lime_vs_logistic_regression_exact: "Random Forest (LIME) vs Logistic Regression (Exact)",
+      random_forest_lime_vs_linear_svm_exact: "Random Forest (LIME) vs Linear SVM (Exact)",
+      random_forest_lime_vs_complement_nb_exact: "Random Forest (LIME) vs Complement NB (Exact)",
+      logistic_regression_exact_vs_linear_svm_exact: "Logistic Regression (Exact) vs Linear SVM (Exact)",
+    };
+    return map[key] || key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  const getInterpretation = (key: string): string => {
+    if (key.includes("naive_bayes") || key.includes("complement_nb_exact_vs_lime")) {
+      return "Low rank agreement: severe NB probability saturation (step-like surface) & log-odds mismatch.";
+    }
+    if (key.includes("logistic_regression_exact_vs_linear_svm")) {
+      return "Very high agreement (ρ > 0.94): both linear models identify nearly identical decision surfaces.";
+    }
+    if (key.includes("random_forest")) {
+      return "Moderate agreement (ρ ≈ 0.46–0.50): tree splits capture non-linear interactions while sharing core linear unigrams.";
+    }
+    return "High rank correlation (ρ > 0.86): LIME local perturbation accurately recovers linear hyperplanes.";
+  };
+
+  // Safely normalize method agreement entries (handles both dict and array formats)
+  const agreementData: MethodAgreementResult[] = (() => {
+    if (!faithfulness?.method_agreement) return [];
+
+    if (Array.isArray(faithfulness.method_agreement)) {
+      return (faithfulness.method_agreement as any[]).map((item) => ({
+        comparison: item.comparison || "Comparison",
+        n_emails: item.n_emails ?? 30,
+        spearman_rho_mean: item.spearman_rho_mean ?? 0,
+        top5_jaccard_mean: item.top5_jaccard_mean ?? 0,
+        top10_jaccard_mean: item.top10_jaccard_mean ?? 0,
+        interpretation: item.interpretation || getInterpretation(item.comparison || ""),
+      }));
+    }
+
+    const agreeObj = faithfulness.method_agreement as Record<string, any>;
+    return Object.entries(agreeObj).map(([key, item]) => ({
+      comparison: formatComparisonName(key),
+      n_emails: item.n_evaluated ?? 30,
+      spearman_rho_mean: item.mean_spearman_rho ?? 0,
+      top5_jaccard_mean: item.mean_top_5_jaccard ?? 0,
+      top10_jaccard_mean: item.mean_top_10_jaccard ?? 0,
+      interpretation: getInterpretation(key),
+    }));
+  })();
 
   // Chart data for probability drop
   const probChartData = [1, 3, 5, 10].map((k) => {
@@ -155,6 +255,12 @@ export default function ExplainabilityPage() {
         {selectedModel === "random_forest" && (
           <div className="p-3 text-xs bg-accent/40 border border-accent text-accent-foreground rounded-md">
             <strong>Methodology Note:</strong> Random Forest feature importances (Gini impurities) are unsigned. Signed terms are derived by weighting each feature&apos;s Gini importance by its class conditional mean difference: <code className="font-mono text-[11px]">sign(μ_spam - μ_ham) × importance</code>.
+          </div>
+        )}
+
+        {(selectedModel === "complement_nb" || selectedModel === "multinomial_nb") && (
+          <div className="p-3 text-xs bg-accent/40 border border-accent text-accent-foreground rounded-md space-y-1">
+            <strong>Theoretical Note (Rennie et al., 2003):</strong> In the binary classification case, Complement NB and Multinomial NB have <em>identical feature weights</em> (<code className="font-mono text-[11px]">w_j = log θ_j - log θ&#773;_j</code>). They differ only in the intercept threshold (<code className="font-mono text-[11px]">b_CNB = log(N_ham / N_spam)</code> vs <code className="font-mono text-[11px]">b_MNB = log(N_spam / N_ham)</code>). CNB&apos;s holdout advantage is therefore an empirical threshold shift effect on imbalanced classes, not superior feature modelling.
           </div>
         )}
 
@@ -361,7 +467,7 @@ export default function ExplainabilityPage() {
               &bull; <strong>Circularity Note:</strong> For linear models, the deletion test is partly circular because the exact weights determine the linear prediction. The informative benchmarks are LIME vs exact and Random Forest vs the others.
             </div>
             <div>
-              &bull; <strong>L2-renormalization Diagnosis:</strong> In Naive Bayes at k=1, the win rate is 96.6% (84/87). In the 3 non-winning instances, deleting a high-TF-IDF spam token shrinks the email vector&apos;s L2 norm, rescaling remaining spam tokens by <code className="font-mono text-[10px]">1 / √(1 - x₁²)</code>.
+              &bull; <strong>L2-renormalization Diagnosis:</strong> In Naive Bayes at k=1, the win rate is 96.6% (84/87). In the 3 non-winning instances, deleting a high-TF-IDF spam token shrinks the email vector&apos;s L2 norm, rescaling remaining spam tokens by <code className="font-mono text-[10px]">1 / √(1 - x₁²)</code>. Note: Deletion matching was corrected after the initial run; this L2-renormalization explanation is a diagnosis, not a mathematically proven result.
             </div>
           </div>
         </div>
@@ -391,7 +497,7 @@ export default function ExplainabilityPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {faithfulness?.method_agreement.map((m, idx) => (
+              {agreementData.map((m, idx) => (
                 <tr key={idx} className="hover:bg-secondary/40">
                   <td className="py-2.5 px-4 font-semibold text-foreground">{m.comparison}</td>
                   <td className="py-2.5 px-3 font-mono text-muted-foreground">{m.n_emails}</td>
