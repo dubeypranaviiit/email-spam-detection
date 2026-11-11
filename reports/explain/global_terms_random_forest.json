@@ -1,0 +1,210 @@
+{
+  "model": "Random Forest",
+  "model_tag": "random_forest",
+  "method": "mean_decrease_in_impurity_signed_by_class_frequency",
+  "top_k": 25,
+  "top_spam_terms": [
+    {
+      "term": "click",
+      "weight": 0.014116690152866759
+    },
+    {
+      "term": "free",
+      "weight": 0.007678266179554101
+    },
+    {
+      "term": "email",
+      "weight": 0.0074741746915566514
+    },
+    {
+      "term": "offer",
+      "weight": 0.006347846163428793
+    },
+    {
+      "term": "wish",
+      "weight": 0.006229060339469692
+    },
+    {
+      "term": "remove",
+      "weight": 0.006068697960067138
+    },
+    {
+      "term": "contact",
+      "weight": 0.006041514382358367
+    },
+    {
+      "term": "money",
+      "weight": 0.005108334227742983
+    },
+    {
+      "term": "reply",
+      "weight": 0.005096430847221569
+    },
+    {
+      "term": "removed",
+      "weight": 0.0048259091352095196
+    },
+    {
+      "term": "receive",
+      "weight": 0.004770720599399826
+    },
+    {
+      "term": "special",
+      "weight": 0.004344893918593673
+    },
+    {
+      "term": "address",
+      "weight": 0.003978194801077582
+    },
+    {
+      "term": "today",
+      "weight": 0.0038049524481241492
+    },
+    {
+      "term": "price",
+      "weight": 0.0034128938710429753
+    },
+    {
+      "term": "mail",
+      "weight": 0.0033940441814600064
+    },
+    {
+      "term": "information",
+      "weight": 0.0033147042937206567
+    },
+    {
+      "term": "guaranteed",
+      "weight": 0.003219015681235953
+    },
+    {
+      "term": "company",
+      "weight": 0.0031679675861195173
+    },
+    {
+      "term": "visit",
+      "weight": 0.0029393947276610257
+    },
+    {
+      "term": "wish receive",
+      "weight": 0.0028656419520217873
+    },
+    {
+      "term": "order",
+      "weight": 0.002643285308094502
+    },
+    {
+      "term": "000",
+      "weight": 0.0024313355885149965
+    },
+    {
+      "term": "business",
+      "weight": 0.0024187459421976592
+    },
+    {
+      "term": "opt",
+      "weight": 0.0023274805179085423
+    }
+  ],
+  "top_ham_terms": [
+    {
+      "term": "wrote",
+      "weight": -0.010876768162614476
+    },
+    {
+      "term": "date",
+      "weight": -0.00881209857542086
+    },
+    {
+      "term": "2002",
+      "weight": -0.008001458380950928
+    },
+    {
+      "term": "url http",
+      "weight": -0.007546404988574699
+    },
+    {
+      "term": "_______________________________________________",
+      "weight": -0.007245300336809007
+    },
+    {
+      "term": "listinfo",
+      "weight": -0.006160747991814635
+    },
+    {
+      "term": "newsisfree",
+      "weight": -0.005192177793808312
+    },
+    {
+      "term": "sep",
+      "weight": -0.004834311371659376
+    },
+    {
+      "term": "mailman",
+      "weight": -0.004457355025196755
+    },
+    {
+      "term": "url",
+      "weight": -0.004264545274846921
+    },
+    {
+      "term": "www",
+      "weight": -0.00419815226306533
+    },
+    {
+      "term": "01",
+      "weight": -0.004052818471317818
+    },
+    {
+      "term": "com",
+      "weight": -0.0038879780702953046
+    },
+    {
+      "term": "use",
+      "weight": -0.0036518122988950935
+    },
+    {
+      "term": "http",
+      "weight": -0.0035755651586371422
+    },
+    {
+      "term": "09",
+      "weight": -0.0034307696888370397
+    },
+    {
+      "term": "think",
+      "weight": -0.003311134497095869
+    },
+    {
+      "term": "date 2002",
+      "weight": -0.003263035550796642
+    },
+    {
+      "term": "net",
+      "weight": -0.003103192094401762
+    },
+    {
+      "term": "01 00",
+      "weight": -0.0026933008359190827
+    },
+    {
+      "term": "newsisfree com",
+      "weight": -0.0025972022062016055
+    },
+    {
+      "term": "org",
+      "weight": -0.0025636854844933283
+    },
+    {
+      "term": "fork",
+      "weight": -0.002561917441969002
+    },
+    {
+      "term": "lists",
+      "weight": -0.0025596922679667023
+    },
+    {
+      "term": "http www",
+      "weight": -0.0025237911701594886
+    }
+  ]
+}

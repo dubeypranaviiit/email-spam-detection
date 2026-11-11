@@ -1,0 +1,210 @@
+{
+  "model": "Linear SVM",
+  "model_tag": "linear_svm",
+  "method": "linear_coefficients",
+  "top_k": 25,
+  "top_spam_terms": [
+    {
+      "term": "click",
+      "weight": 1.7162254149370995
+    },
+    {
+      "term": "net",
+      "weight": 1.1108781915912351
+    },
+    {
+      "term": "visit",
+      "weight": 1.0781182326462508
+    },
+    {
+      "term": "money",
+      "weight": 1.0706649315596766
+    },
+    {
+      "term": "free",
+      "weight": 1.036145502182097
+    },
+    {
+      "term": "receive",
+      "weight": 0.983224170905575
+    },
+    {
+      "term": "removed",
+      "weight": 0.9410275546668103
+    },
+    {
+      "term": "webmake talk",
+      "weight": 0.9225411163357778
+    },
+    {
+      "term": "webmake",
+      "weight": 0.9225411163357778
+    },
+    {
+      "term": "contact",
+      "weight": 0.8867310467841438
+    },
+    {
+      "term": "price",
+      "weight": 0.8685404689615515
+    },
+    {
+      "term": "wish",
+      "weight": 0.8460945567568985
+    },
+    {
+      "term": "remove",
+      "weight": 0.8114552307491212
+    },
+    {
+      "term": "webcam",
+      "weight": 0.7351388902506281
+    },
+    {
+      "term": "guaranteed",
+      "weight": 0.7101173034630609
+    },
+    {
+      "term": "reply",
+      "weight": 0.6853475609701356
+    },
+    {
+      "term": "business",
+      "weight": 0.6834595971845908
+    },
+    {
+      "term": "email",
+      "weight": 0.6832138030776661
+    },
+    {
+      "term": "86",
+      "weight": 0.650473640935385
+    },
+    {
+      "term": "fax",
+      "weight": 0.6504225006529392
+    },
+    {
+      "term": "investment",
+      "weight": 0.647320206012386
+    },
+    {
+      "term": "dileriz",
+      "weight": 0.6382361968418645
+    },
+    {
+      "term": "visit http",
+      "weight": 0.6252008469857271
+    },
+    {
+      "term": "order",
+      "weight": 0.6242922927630048
+    },
+    {
+      "term": "listinfo webmake",
+      "weight": 0.620513225639999
+    }
+  ],
+  "top_ham_terms": [
+    {
+      "term": "wrote",
+      "weight": -1.9192979175391283
+    },
+    {
+      "term": "com",
+      "weight": -1.676660351193614
+    },
+    {
+      "term": "2002",
+      "weight": -1.5648558705427222
+    },
+    {
+      "term": "spambayes",
+      "weight": -1.3892842312680243
+    },
+    {
+      "term": "url",
+      "weight": -1.3058417876063586
+    },
+    {
+      "term": "url http",
+      "weight": -1.2607596795603284
+    },
+    {
+      "term": "said",
+      "weight": -1.257928632283855
+    },
+    {
+      "term": "spamassassin",
+      "weight": -1.1250998268423293
+    },
+    {
+      "term": "date",
+      "weight": -1.0938714873418882
+    },
+    {
+      "term": "org",
+      "weight": -1.044209031547911
+    },
+    {
+      "term": "fork",
+      "weight": -0.9704889302629269
+    },
+    {
+      "term": "rpm",
+      "weight": -0.9372758533747758
+    },
+    {
+      "term": "use",
+      "weight": -0.9242247070497567
+    },
+    {
+      "term": "html",
+      "weight": -0.9191025406738329
+    },
+    {
+      "term": "date supplied",
+      "weight": -0.9126640116554535
+    },
+    {
+      "term": "supplied",
+      "weight": -0.9098462915766364
+    },
+    {
+      "term": "spam",
+      "weight": -0.9056895517617993
+    },
+    {
+      "term": "say",
+      "weight": -0.8954721410698335
+    },
+    {
+      "term": "way",
+      "weight": -0.8593758665751179
+    },
+    {
+      "term": "jim",
+      "weight": -0.8513821974512994
+    },
+    {
+      "term": "just",
+      "weight": -0.8269446318411668
+    },
+    {
+      "term": "newsisfree com",
+      "weight": -0.8236310408247638
+    },
+    {
+      "term": "www newsisfree",
+      "weight": -0.8236310408247638
+    },
+    {
+      "term": "newsisfree",
+      "weight": -0.8236310408247638
+    },
+    {
+      "term": "users",
+      "weight": -0.8086364221058391
+    }
+  ]
+}

@@ -13,3 +13,10 @@ reports/*
 !reports/html_ablation.csv
 !reports/model_comparison.png
 !reports/*_confusion_matrix.png
+!reports/explain/
+!reports/explain/*.json
+!reports/explain/*.csv
+reports/*_errors.csv
+reports/explain/*_errors.csv
+.next/
+node_modules/

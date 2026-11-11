@@ -1,0 +1,210 @@
+{
+  "model": "Multinomial Naive Bayes",
+  "model_tag": "naive_bayes",
+  "method": "log_likelihood_ratio",
+  "top_k": 25,
+  "top_spam_terms": [
+    {
+      "term": "wish receive",
+      "weight": 7.355197227324054
+    },
+    {
+      "term": "insuranceiq",
+      "weight": 7.208406878821874
+    },
+    {
+      "term": "insuranceiq com",
+      "weight": 7.208406878821874
+    },
+    {
+      "term": "www insuranceiq",
+      "weight": 7.186326812451591
+    },
+    {
+      "term": "click http",
+      "weight": 7.081834533857101
+    },
+    {
+      "term": "optout",
+      "weight": 7.044583200105005
+    },
+    {
+      "term": "remove subject",
+      "weight": 7.043180744671703
+    },
+    {
+      "term": "click link",
+      "weight": 7.013059748384416
+    },
+    {
+      "term": "ws cfm",
+      "weight": 6.985564360992669
+    },
+    {
+      "term": "www adclick",
+      "weight": 6.985564360992669
+    },
+    {
+      "term": "adclick ws",
+      "weight": 6.985564360992669
+    },
+    {
+      "term": "adclick",
+      "weight": 6.985564360992669
+    },
+    {
+      "term": "com optout",
+      "weight": 6.977594689380901
+    },
+    {
+      "term": "email error",
+      "weight": 6.8934211392414015
+    },
+    {
+      "term": "list click",
+      "weight": 6.844782857741261
+    },
+    {
+      "term": "life insurance",
+      "weight": 6.810468510541385
+    },
+    {
+      "term": "removed mailing",
+      "weight": 6.800547747679225
+    },
+    {
+      "term": "receive mailings",
+      "weight": 6.766908160450084
+    },
+    {
+      "term": "netnoteinc com",
+      "weight": 6.754347018186693
+    },
+    {
+      "term": "jm netnoteinc",
+      "weight": 6.754347018186693
+    },
+    {
+      "term": "netnoteinc",
+      "weight": 6.754347018186693
+    },
+    {
+      "term": "systemworks",
+      "weight": 6.737264136288879
+    },
+    {
+      "term": "city state",
+      "weight": 6.708432407058179
+    },
+    {
+      "term": "pk007",
+      "weight": 6.660876200594863
+    },
+    {
+      "term": "com legal",
+      "weight": 6.624640757042897
+    }
+  ],
+  "top_ham_terms": [
+    {
+      "term": "newsisfree com",
+      "weight": -6.477463516928745
+    },
+    {
+      "term": "newsisfree",
+      "weight": -6.477463516928745
+    },
+    {
+      "term": "www newsisfree",
+      "weight": -6.477463516928745
+    },
+    {
+      "term": "rpm",
+      "weight": -6.335206459833119
+    },
+    {
+      "term": "wrote",
+      "weight": -6.2829145250497245
+    },
+    {
+      "term": "rpm list",
+      "weight": -6.19160505767189
+    },
+    {
+      "term": "01 00",
+      "weight": -6.177645658837193
+    },
+    {
+      "term": "2002 09",
+      "weight": -6.13870463505104
+    },
+    {
+      "term": "freshrpms",
+      "weight": -6.078883516307121
+    },
+    {
+      "term": "freshrpms net",
+      "weight": -6.069584368067734
+    },
+    {
+      "term": "date supplied",
+      "weight": -5.926470100651031
+    },
+    {
+      "term": "exmh",
+      "weight": -5.90060390850083
+    },
+    {
+      "term": "razor",
+      "weight": -5.76535232691095
+    },
+    {
+      "term": "215 date",
+      "weight": -5.7411235988724165
+    },
+    {
+      "term": "redhat",
+      "weight": -5.695199414755203
+    },
+    {
+      "term": "2002 10",
+      "weight": -5.586393258723746
+    },
+    {
+      "term": "fork",
+      "weight": -5.553824874701316
+    },
+    {
+      "term": "razor users",
+      "weight": -5.540578940822998
+    },
+    {
+      "term": "perl",
+      "weight": -5.483359876049279
+    },
+    {
+      "term": "yahoo groups",
+      "weight": -5.480337604779459
+    },
+    {
+      "term": "list mailing",
+      "weight": -5.473722890815381
+    },
+    {
+      "term": "http lists",
+      "weight": -5.4734598121481906
+    },
+    {
+      "term": "lists freshrpms",
+      "weight": -5.470524389649665
+    },
+    {
+      "term": "net mailman",
+      "weight": -5.47015814846648
+    },
+    {
+      "term": "list rpm",
+      "weight": -5.469723032111084
+    }
+  ]
+}

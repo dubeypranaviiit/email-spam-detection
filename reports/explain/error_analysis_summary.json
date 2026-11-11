@@ -1,0 +1,624 @@
+{
+  "dataset": "SpamAssassin Holdout Split (563 test messages: 456 ham, 107 spam)",
+  "models": {
+    "complement_nb": {
+      "model": "Complement Naive Bayes",
+      "model_tag": "complement_nb",
+      "false_negatives": {
+        "count": 3,
+        "percentage_of_actual_class": 0.028037383177570093,
+        "body_sources": {
+          "text/plain": 2,
+          "text/html": 1
+        },
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 636,
+          "max": 126361,
+          "mean": 42594.333333333336,
+          "median": 786.0
+        },
+        "word_length": {
+          "min": 53,
+          "max": 1831,
+          "mean": 658.3333333333334,
+          "median": 91.0
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "erik",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.7838822039151081
+          },
+          {
+            "token": "lt",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.5742859606521247
+          },
+          {
+            "token": "sa",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.517726295558141
+          },
+          {
+            "token": "ba",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.4493257682684527
+          },
+          {
+            "token": "ve",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.3281258007507668
+          },
+          {
+            "token": "art",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.23268903135756522
+          },
+          {
+            "token": "01 01",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.4276696094169217
+          },
+          {
+            "token": "mirrors",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.42217869796678187
+          },
+          {
+            "token": "wood",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.376494414055544
+          },
+          {
+            "token": "air conditioning",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.37165682299734976
+          },
+          {
+            "token": "conditioning",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.37165682299734976
+          },
+          {
+            "token": "01",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.3403736389362612
+          },
+          {
+            "token": "paint",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.33911942103006404
+          },
+          {
+            "token": "rc",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.5443780398392044
+          },
+          {
+            "token": "r1",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": -0.5186086066759519
+          }
+        ]
+      },
+      "false_positives": {
+        "count": 0,
+        "percentage_of_test_subset": 0.0,
+        "body_sources": {},
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 0,
+          "max": 0,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "word_length": {
+          "min": 0,
+          "max": 0,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "top_misleading_tokens": []
+      }
+    },
+    "linear_svm": {
+      "model": "Linear SVM",
+      "model_tag": "linear_svm",
+      "false_negatives": {
+        "count": 4,
+        "percentage_of_actual_class": 0.037383177570093455,
+        "body_sources": {
+          "text/plain": 4
+        },
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 395,
+          "max": 126361,
+          "mean": 32222.5,
+          "median": 1067.0
+        },
+        "word_length": {
+          "min": 26,
+          "max": 1831,
+          "mean": 492.5,
+          "median": 56.5
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "com",
+            "error_frequency": 3,
+            "frequency_rate": 0.75,
+            "mean_contribution_weight": -0.12196760456118734
+          },
+          {
+            "token": "http",
+            "error_frequency": 2,
+            "frequency_rate": 0.5,
+            "mean_contribution_weight": -0.027417001790021427
+          },
+          {
+            "token": "org",
+            "error_frequency": 2,
+            "frequency_rate": 0.5,
+            "mean_contribution_weight": -0.0649209157799489
+          },
+          {
+            "token": "ve",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.23623550721120526
+          },
+          {
+            "token": "sa",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.054605982171774564
+          },
+          {
+            "token": "art",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.012809686893169829
+          },
+          {
+            "token": "linux",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.13572145950487302
+          },
+          {
+            "token": "users",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.06676984203686624
+          },
+          {
+            "token": "ilug",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.05844858750745704
+          },
+          {
+            "token": "mailman",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.05128369786668223
+          },
+          {
+            "token": "mailman listinfo",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.050613132761200455
+          },
+          {
+            "token": "listinfo",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.040059800325803814
+          },
+          {
+            "token": "message",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.06811864660720536
+          },
+          {
+            "token": "unsubscribe send",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.03068620614789789
+          },
+          {
+            "token": "ports",
+            "error_frequency": 1,
+            "frequency_rate": 0.25,
+            "mean_contribution_weight": -0.022557911465368268
+          }
+        ]
+      },
+      "false_positives": {
+        "count": 0,
+        "percentage_of_test_subset": 0.0,
+        "body_sources": {},
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 0,
+          "max": 0,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "word_length": {
+          "min": 0,
+          "max": 0,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "top_misleading_tokens": []
+      }
+    },
+    "logistic_regression": {
+      "model": "Logistic Regression",
+      "model_tag": "logistic_regression",
+      "false_negatives": {
+        "count": 10,
+        "percentage_of_actual_class": 0.09345794392523364,
+        "body_sources": {
+          "text/plain": 8,
+          "no_text_body": 1,
+          "text/html": 1
+        },
+        "short_text_rate": 0.1,
+        "subject_only_rate": 0.1,
+        "character_length": {
+          "min": 82,
+          "max": 126361,
+          "mean": 13112.9,
+          "median": 418.5
+        },
+        "word_length": {
+          "min": 14,
+          "max": 1831,
+          "mean": 212.4,
+          "median": 26.5
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "com",
+            "error_frequency": 5,
+            "frequency_rate": 0.5,
+            "mean_contribution_weight": -0.18789824845925945
+          },
+          {
+            "token": "org",
+            "error_frequency": 5,
+            "frequency_rate": 0.5,
+            "mean_contribution_weight": -0.21350364707826489
+          },
+          {
+            "token": "message",
+            "error_frequency": 4,
+            "frequency_rate": 0.4,
+            "mean_contribution_weight": -0.10695405061273401
+          },
+          {
+            "token": "book",
+            "error_frequency": 3,
+            "frequency_rate": 0.3,
+            "mean_contribution_weight": -0.07277142672722614
+          },
+          {
+            "token": "unsubscribe send",
+            "error_frequency": 3,
+            "frequency_rate": 0.3,
+            "mean_contribution_weight": -0.039810289249535766
+          },
+          {
+            "token": "ve",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.44988962917520714
+          },
+          {
+            "token": "sa",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.15069395923001844
+          },
+          {
+            "token": "pm",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.20990427301129028
+          },
+          {
+            "token": "57",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.10450548161874126
+          },
+          {
+            "token": "11",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.09730506392957133
+          },
+          {
+            "token": "43",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.09008437427378548
+          },
+          {
+            "token": "junk",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.07994008498477762
+          },
+          {
+            "token": "linux",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.2286333777125303
+          },
+          {
+            "token": "users",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.16353572469681435
+          },
+          {
+            "token": "mailman",
+            "error_frequency": 1,
+            "frequency_rate": 0.1,
+            "mean_contribution_weight": -0.13280900876904056
+          }
+        ]
+      },
+      "false_positives": {
+        "count": 1,
+        "percentage_of_actual_class": 0.0021929824561403508,
+        "body_sources": {
+          "text/plain": 1
+        },
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 6772,
+          "max": 6772,
+          "mean": 6772.0,
+          "median": 6772.0
+        },
+        "word_length": {
+          "min": 999,
+          "max": 999,
+          "mean": 999.0,
+          "median": 999.0
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "price",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.15639654869917208
+          },
+          {
+            "token": "market",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.12876965427352155
+          },
+          {
+            "token": "offers",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.12518778209318912
+          },
+          {
+            "token": "access",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.12165436882907914
+          },
+          {
+            "token": "offer",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.11515839250544152
+          },
+          {
+            "token": "company",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.11069290492098417
+          },
+          {
+            "token": "free",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.10307517976159379
+          },
+          {
+            "token": "products",
+            "error_frequency": 1,
+            "frequency_rate": 1.0,
+            "mean_contribution_weight": 0.09669109155649745
+          }
+        ]
+      }
+    },
+    "random_forest": {
+      "model": "Random Forest",
+      "model_tag": "random_forest",
+      "false_negatives": {
+        "count": 13,
+        "percentage_of_actual_class": 0.12149532710280374,
+        "body_sources": {
+          "text/plain": 12,
+          "text/html": 1
+        },
+        "short_text_rate": 0.0,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 395,
+          "max": 126361,
+          "mean": 10905.76923076923,
+          "median": 1443.0
+        },
+        "word_length": {
+          "min": 26,
+          "max": 1831,
+          "mean": 275.0769230769231,
+          "median": 172.0
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "com",
+            "error_frequency": 11,
+            "frequency_rate": 0.8461538461538461,
+            "mean_contribution_weight": -0.054738561529541305
+          },
+          {
+            "token": "http",
+            "error_frequency": 6,
+            "frequency_rate": 0.46153846153846156,
+            "mean_contribution_weight": -0.07711854899008383
+          },
+          {
+            "token": "way",
+            "error_frequency": 4,
+            "frequency_rate": 0.3076923076923077,
+            "mean_contribution_weight": -0.04214793872478918
+          },
+          {
+            "token": "www",
+            "error_frequency": 3,
+            "frequency_rate": 0.23076923076923078,
+            "mean_contribution_weight": -0.06924367463251252
+          },
+          {
+            "token": "message",
+            "error_frequency": 3,
+            "frequency_rate": 0.23076923076923078,
+            "mean_contribution_weight": -0.04698687706082977
+          },
+          {
+            "token": "case",
+            "error_frequency": 3,
+            "frequency_rate": 0.23076923076923078,
+            "mean_contribution_weight": -0.031857537612420515
+          },
+          {
+            "token": "10",
+            "error_frequency": 3,
+            "frequency_rate": 0.23076923076923078,
+            "mean_contribution_weight": -0.05282780005584373
+          },
+          {
+            "token": "using",
+            "error_frequency": 3,
+            "frequency_rate": 0.23076923076923078,
+            "mean_contribution_weight": -0.030978164986896026
+          },
+          {
+            "token": "mailman",
+            "error_frequency": 2,
+            "frequency_rate": 0.15384615384615385,
+            "mean_contribution_weight": -0.10599744102604022
+          },
+          {
+            "token": "use",
+            "error_frequency": 2,
+            "frequency_rate": 0.15384615384615385,
+            "mean_contribution_weight": -0.032901927394031354
+          },
+          {
+            "token": "listinfo",
+            "error_frequency": 2,
+            "frequency_rate": 0.15384615384615385,
+            "mean_contribution_weight": -0.07694983836819794
+          },
+          {
+            "token": "ve",
+            "error_frequency": 2,
+            "frequency_rate": 0.15384615384615385,
+            "mean_contribution_weight": -0.020354771913574172
+          },
+          {
+            "token": "people",
+            "error_frequency": 2,
+            "frequency_rate": 0.15384615384615385,
+            "mean_contribution_weight": -0.03843525682015145
+          },
+          {
+            "token": "like",
+            "error_frequency": 1,
+            "frequency_rate": 0.07692307692307693,
+            "mean_contribution_weight": -0.020526761690997784
+          },
+          {
+            "token": "sanat",
+            "error_frequency": 1,
+            "frequency_rate": 0.07692307692307693,
+            "mean_contribution_weight": -0.026118825410045603
+          }
+        ]
+      },
+      "false_positives": {
+        "count": 3,
+        "percentage_of_actual_class": 0.006578947368421052,
+        "body_sources": {
+          "text/plain": 3
+        },
+        "short_text_rate": 0.6666666666666666,
+        "subject_only_rate": 0.0,
+        "character_length": {
+          "min": 58,
+          "max": 181,
+          "mean": 126.33333333333333,
+          "median": 140.0
+        },
+        "word_length": {
+          "min": 8,
+          "max": 40,
+          "mean": 23.333333333333332,
+          "median": 22.0
+        },
+        "top_misleading_tokens": [
+          {
+            "token": "morning",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": 0.0002818514344255708
+          },
+          {
+            "token": "per",
+            "error_frequency": 1,
+            "frequency_rate": 0.3333333333333333,
+            "mean_contribution_weight": 4.101965364456078e-05
+          }
+        ]
+      }
+    }
+  },
+  "notes": "Aggregate error patterns only; raw email messages and bodies are strictly excluded. Best holdout model (Complement NB) produced only 3 false negatives and 0 false positives. Linear SVM produced 4 false negatives and 0 false positives. Logistic Regression produced 10 false negatives and 1 false positive."
+}

@@ -1,0 +1,253 @@
+{
+  "deletion_tests": {
+    "logistic_regression": {
+      "model": "Logistic Regression",
+      "model_tag": "logistic_regression",
+      "method_used": "exact",
+      "total_test_spam": 107,
+      "correctly_classified_spam": 50,
+      "deletion_results": {
+        "1": {
+          "k": 1,
+          "mean_drop_top_k": 0.03606251073395329,
+          "std_drop_top_k": 0.037721541790639135,
+          "mean_drop_random": 0.003134321308177166,
+          "std_drop_random": 0.00862359356559621,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "3": {
+          "k": 3,
+          "mean_drop_top_k": 0.09736924078495901,
+          "std_drop_top_k": 0.08524927121845444,
+          "mean_drop_random": 0.009234886698133432,
+          "std_drop_random": 0.014734543594300646,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "5": {
+          "k": 5,
+          "mean_drop_top_k": 0.1543960616982484,
+          "std_drop_top_k": 0.12468426956278746,
+          "mean_drop_random": 0.018203689627000873,
+          "std_drop_random": 0.019387647835956815,
+          "win_rate_vs_random": 0.98,
+          "samples_evaluated": 50
+        },
+        "10": {
+          "k": 10,
+          "mean_drop_top_k": 0.27296637810102886,
+          "std_drop_top_k": 0.18645258655601385,
+          "mean_drop_random": 0.03887335102156054,
+          "std_drop_random": 0.02969350199692579,
+          "win_rate_vs_random": 0.98,
+          "samples_evaluated": 50
+        }
+      }
+    },
+    "linear_svm": {
+      "model": "Linear SVM",
+      "model_tag": "linear_svm",
+      "method_used": "exact",
+      "total_test_spam": 107,
+      "correctly_classified_spam": 50,
+      "deletion_results": {
+        "1": {
+          "k": 1,
+          "mean_drop_top_k": 0.02709894297966277,
+          "std_drop_top_k": 0.013277093455853841,
+          "mean_drop_random": 0.0019520341699761745,
+          "std_drop_random": 0.007509601379825915,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "3": {
+          "k": 3,
+          "mean_drop_top_k": 0.05963419586127882,
+          "std_drop_top_k": 0.021395083119030323,
+          "mean_drop_random": 0.004522079941687658,
+          "std_drop_random": 0.012541784929917294,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "5": {
+          "k": 5,
+          "mean_drop_top_k": 0.09041210477479304,
+          "std_drop_top_k": 0.03934454762392769,
+          "mean_drop_random": 0.009574110007469699,
+          "std_drop_random": 0.01768806554890923,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "10": {
+          "k": 10,
+          "mean_drop_top_k": 0.1396633149741232,
+          "std_drop_top_k": 0.04165700797775749,
+          "mean_drop_random": 0.01593156116358106,
+          "std_drop_random": 0.021618733617822624,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        }
+      }
+    },
+    "complement_nb": {
+      "model": "Complement Naive Bayes",
+      "model_tag": "complement_nb",
+      "method_used": "exact",
+      "total_test_spam": 107,
+      "correctly_classified_spam": 50,
+      "deletion_results": {
+        "1": {
+          "k": 1,
+          "mean_drop_top_k": 0.007541268175066591,
+          "std_drop_top_k": 0.034847817136007014,
+          "mean_drop_random": 0.0005100949737516892,
+          "std_drop_random": 0.0023901641058690446,
+          "win_rate_vs_random": 0.56,
+          "samples_evaluated": 50
+        },
+        "3": {
+          "k": 3,
+          "mean_drop_top_k": 0.045562969527604406,
+          "std_drop_top_k": 0.12224228508796134,
+          "mean_drop_random": 0.0045748323866541644,
+          "std_drop_random": 0.010457414955293634,
+          "win_rate_vs_random": 0.8,
+          "samples_evaluated": 50
+        },
+        "5": {
+          "k": 5,
+          "mean_drop_top_k": 0.09636505467716733,
+          "std_drop_top_k": 0.23290838873137532,
+          "mean_drop_random": 0.012668384468904581,
+          "std_drop_random": 0.018637540839468277,
+          "win_rate_vs_random": 0.8,
+          "samples_evaluated": 50
+        },
+        "10": {
+          "k": 10,
+          "mean_drop_top_k": 0.13666945831427024,
+          "std_drop_top_k": 0.28816410467926096,
+          "mean_drop_random": 0.03301860249691028,
+          "std_drop_random": 0.02626317599515716,
+          "win_rate_vs_random": 0.78,
+          "samples_evaluated": 50
+        }
+      }
+    },
+    "naive_bayes": {
+      "model": "Multinomial Naive Bayes",
+      "model_tag": "naive_bayes",
+      "method_used": "exact",
+      "total_test_spam": 107,
+      "correctly_classified_spam": 50,
+      "deletion_results": {
+        "1": {
+          "k": 1,
+          "mean_drop_top_k": 0.009035686889882797,
+          "std_drop_top_k": 0.03506339767794543,
+          "mean_drop_random": 0.0012583451940134077,
+          "std_drop_random": 0.005250101613705934,
+          "win_rate_vs_random": 0.5,
+          "samples_evaluated": 50
+        },
+        "3": {
+          "k": 3,
+          "mean_drop_top_k": 0.059813223441528195,
+          "std_drop_top_k": 0.1805166768940429,
+          "mean_drop_random": 0.006797288199017373,
+          "std_drop_random": 0.017336008431009454,
+          "win_rate_vs_random": 0.78,
+          "samples_evaluated": 50
+        },
+        "5": {
+          "k": 5,
+          "mean_drop_top_k": 0.08494203490943995,
+          "std_drop_top_k": 0.22969881394528108,
+          "mean_drop_random": 0.02009228781025131,
+          "std_drop_random": 0.024007429928710616,
+          "win_rate_vs_random": 0.76,
+          "samples_evaluated": 50
+        },
+        "10": {
+          "k": 10,
+          "mean_drop_top_k": 0.12773565643254173,
+          "std_drop_top_k": 0.28039551308890226,
+          "mean_drop_random": 0.0373642665497938,
+          "std_drop_random": 0.02675325123402236,
+          "win_rate_vs_random": 0.76,
+          "samples_evaluated": 50
+        }
+      }
+    },
+    "random_forest": {
+      "model": "Random Forest",
+      "model_tag": "random_forest",
+      "method_used": "lime",
+      "total_test_spam": 107,
+      "correctly_classified_spam": 50,
+      "deletion_results": {
+        "1": {
+          "k": 1,
+          "mean_drop_top_k": 0.04366666666666667,
+          "std_drop_top_k": 0.030802236571031292,
+          "mean_drop_random": 0.002599999999999999,
+          "std_drop_random": 0.013120600185384095,
+          "win_rate_vs_random": 0.92,
+          "samples_evaluated": 50
+        },
+        "3": {
+          "k": 3,
+          "mean_drop_top_k": 0.08016666666666668,
+          "std_drop_top_k": 0.05158299676788422,
+          "mean_drop_random": 0.008025,
+          "std_drop_random": 0.021927328752206758,
+          "win_rate_vs_random": 1.0,
+          "samples_evaluated": 50
+        },
+        "5": {
+          "k": 5,
+          "mean_drop_top_k": 0.10216666666666666,
+          "std_drop_top_k": 0.07088351163861892,
+          "mean_drop_random": 0.01010833333333333,
+          "std_drop_random": 0.02705609307448293,
+          "win_rate_vs_random": 0.98,
+          "samples_evaluated": 50
+        },
+        "10": {
+          "k": 10,
+          "mean_drop_top_k": 0.13916666666666666,
+          "std_drop_top_k": 0.09497441175858311,
+          "mean_drop_random": 0.016308333333333327,
+          "std_drop_random": 0.036662330660691494,
+          "win_rate_vs_random": 0.98,
+          "samples_evaluated": 50
+        }
+      }
+    }
+  },
+  "method_agreement": {
+    "logistic_regression_exact_vs_lime": {
+      "evaluated_emails": 30,
+      "mean_spearman_rho": 0.8639915012747829,
+      "std_spearman_rho": 0.10085547599068453,
+      "mean_top_5_jaccard": 0.27791005291005283,
+      "mean_top_10_jaccard": 0.22136370967640318
+    },
+    "linear_svm_exact_vs_lime": {
+      "evaluated_emails": 30,
+      "mean_spearman_rho": 0.8184766858528469,
+      "std_spearman_rho": 0.11607227407933728,
+      "mean_top_5_jaccard": 0.27089947089947086,
+      "mean_top_10_jaccard": 0.23414730264575462
+    },
+    "naive_bayes_exact_vs_lime": {
+      "evaluated_emails": 20,
+      "mean_spearman_rho": 0.42605894105894115,
+      "std_spearman_rho": 0.3963575356014973,
+      "mean_top_5_jaccard": 0.10892857142857142,
+      "mean_top_10_jaccard": 0.12072583419332647
+    }
+  },
+  "experimental_notes": "Deletion test uses correctly classified test spam emails only, deleting top-k tokens from actual raw text. Random baseline uses 20 repeats per email from active vocabulary tokens. For linear models, the deletion test is partly circular because weights are exact closed-form coefficients; hence the most informative comparisons are LIME vs exact and Random Forest vs linear models."
+}
