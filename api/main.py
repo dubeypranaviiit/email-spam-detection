@@ -238,6 +238,7 @@ async def predict_spam(request: PredictRequest) -> PredictResponse:
         label=label,
         label_name="spam" if label == 1 else "ham",
         spam_probability=prob,
+        confidence=float(max(prob, 1.0 - prob)),
     )
 
 

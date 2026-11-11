@@ -298,7 +298,7 @@ export default function DetectorPage() {
               <div>
                 <div className="flex justify-between text-xs font-medium text-muted-foreground mb-1.5">
                   <span>Spam Probability: <strong className="text-foreground">{formatPercent(prediction.spam_probability)}</strong></span>
-                  <span>Confidence: <strong className="text-foreground">{formatPercent(prediction.confidence)}</strong></span>
+                  <span>Confidence: <strong className="text-foreground">{formatPercent(prediction.confidence ?? Math.max(prediction.spam_probability, 1 - prediction.spam_probability))}</strong></span>
                 </div>
                 <div className="w-full bg-secondary rounded-full h-3 overflow-hidden border border-border">
                   <div

@@ -52,6 +52,7 @@ class PredictResponse(BaseModel):
     label: int = Field(description="0 for ham, 1 for spam")
     label_name: str = Field(description="'ham' or 'spam'")
     spam_probability: float = Field(ge=0.0, le=1.0)
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
 
 
 class ExplainRequest(BaseModel):
