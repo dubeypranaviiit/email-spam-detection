@@ -81,7 +81,7 @@ A 12-slide comprehensive presentation covering the dataset audit, leakage-free m
 - **Global Explanations Expose Historical Era Artifacts**:
   - Top ham terms: `rpm`, `wrote`, `users`, `spambayes`, `razor`, `freshrpms`, `2002`.
   - Top spam terms: `insuranceiq`, `click`, `free`, `money`.
-- **Takeaway**: Classifiers achieve >99% accuracy partly by memorizing 2002 open-source mailing list jargon rather than universal linguistic properties of legitimate communication. Global explanations make this shortcut learning visible.
+- **Takeaway**: Classifiers achieve 97% to 99.5% holdout accuracy partly by memorizing 2002 open-source mailing list jargon rather than universal linguistic properties of legitimate communication. Global explanations make this shortcut learning visible.
 
 ---
 

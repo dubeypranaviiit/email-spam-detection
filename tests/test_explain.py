@@ -11,13 +11,14 @@ from src.explain.utils import load_model, load_holdout_split, get_prediction_sco
 
 ROOT = Path(__file__).resolve().parents[1]
 METRICS_JSON_PATH = ROOT / "reports" / "metrics.json"
-EXPECTED_METRICS_SHA256 = "260016373A4BE41865F7F676F93ADA1F587D3F1BA9F23A362491CC3C8E9DB719".lower()
+EXPECTED_METRICS_SHA256 = "5630c498cfd563bd5a4848e7a91996873280fd84f69f53608996d00905636a1d"
 
 
 def test_metrics_json_integrity_unmodified():
-    """Verify that reports/metrics.json has not been altered or overwritten."""
+    """Verify that reports/metrics.json has not been altered or overwritten (normalized to LF)."""
     assert METRICS_JSON_PATH.exists(), "metrics.json must exist"
-    actual_hash = hashlib.sha256(METRICS_JSON_PATH.read_bytes()).hexdigest().lower()
+    content_lf = METRICS_JSON_PATH.read_bytes().replace(b"\r\n", b"\n")
+    actual_hash = hashlib.sha256(content_lf).hexdigest().lower()
     assert actual_hash == EXPECTED_METRICS_SHA256, (
         f"Integrity violation: reports/metrics.json SHA256 changed!\n"
         f"Expected: {EXPECTED_METRICS_SHA256}\n"

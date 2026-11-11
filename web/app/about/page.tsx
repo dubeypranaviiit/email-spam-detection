@@ -106,7 +106,7 @@ export default function AboutNoveltyPage() {
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              We proved that the impact of HTML fallback extraction is model-dependent: it restored 138 emails with otherwise empty bodies, raising Naive Bayes spam recall dramatically from 78.5% to 95.3%, while slightly depressing Logistic Regression recall (91.6% to 90.7%) due to noisy markup artifacts.
+              In this run, the effect differed by model; markup noise is a possible but untested explanation: it restored 138 emails with otherwise empty bodies, raising Naive Bayes spam recall dramatically from 78.5% to 95.3%, while slightly depressing Logistic Regression recall (91.6% to 90.7%).
             </p>
           </div>
 
@@ -184,6 +184,10 @@ export default function AboutNoveltyPage() {
           <div className="border-l-2 border-primary/40 pl-3 space-y-0.5">
             <div className="text-foreground font-medium">Unified Feature Attribution (SHAP)</div>
             <div>Lundberg, S. M., &amp; Lee, S. I. (2017). &ldquo;A unified approach to interpreting model predictions&rdquo;. In <em>Advances in Neural Information Processing Systems (NeurIPS 2017)</em> (pp. 4765–4774).</div>
+          </div>
+          <div className="border-l-2 border-primary/40 pl-3 space-y-0.5">
+            <div className="text-foreground font-medium">Perturbation-based evaluation of explanations (originally images)</div>
+            <div>Samek, W., Binder, A., Montavon, G., Lapuschkin, S., &amp; M&uuml;ller, K. R. (2017). &ldquo;Evaluating the visualization of what a deep neural network has learned&rdquo;. <em>IEEE Transactions on Neural Networks and Learning Systems</em>, 28(11), 2660&ndash;2673.</div>
           </div>
           <div className="border-l-2 border-primary/40 pl-3 space-y-0.5">
             <div className="text-foreground font-medium">ERASER Faithfulness Benchmark in NLP</div>

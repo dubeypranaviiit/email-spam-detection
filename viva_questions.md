@@ -52,10 +52,10 @@
     On Logistic Regression and Linear SVM, LIME achieves high rank correlation ($\rho \approx 0.880$) because its local linear surrogate accurately captures the linear gradient. On Naive Bayes, agreement drops to $\rho \approx 0.165$. We hypothesize two causes: (1) extreme probability saturation in NB creates flat probability gradients near 0 and 1, introducing noise into LIME's perturbation objective; and (2) an objective mismatch (LIME optimizes probability differences, whereas exact NB explains log-odds).
 
 33. **What did global feature explanations reveal about dataset artifacts and "shortcut learning"?**
-    Global explanations revealed that the top ham indicators across all models are terms like `rpm`, `wrote`, `users`, `spambayes`, `razor`, and `2002`. These terms reflect the specific technical mailing lists from which the corpus was collected. The models achieve >99% holdout accuracy partly by learning these historical era shortcuts rather than universal properties of legitimate communication.
+    Global explanations revealed that the top ham indicators across all models are terms like `rpm`, `wrote`, `users`, `spambayes`, `razor`, and `2002`. These terms reflect the specific technical mailing lists from which the corpus was collected. The models achieve 97% to 99.5% holdout accuracy partly by learning these historical era shortcuts rather than universal properties of legitimate communication.
 
 34. **Why are error analysis findings considered anecdotal in this project?**
-    Because holdout accuracy is exceptionally high (>99%), models produce only 0 to 3 false positives and 3 to 13 false negatives across 563 test messages. With such small sample sizes, token patterns found in errors are illustrative and qualitative rather than statistically generalizable findings.
+    Because holdout accuracy is exceptionally high (97% to 99.5% holdout accuracy), models produce only 0 to 3 false positives and 3 to 13 false negatives across 563 test messages. With such small sample sizes, token patterns found in errors are illustrative and qualitative rather than statistically generalizable findings.
 
 35. **How is the modern Next.js / FastAPI dashboard architected to protect user privacy?**
     The backend API enforces a 20,000-character ceiling, sliding-window rate limiting, and request timeouts. Critically, the API never logs email bodies or persists input text to disk. In the frontend, token highlights and decision margins are calculated on the fly without storing email content in git or browser storage.

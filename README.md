@@ -21,7 +21,7 @@ Features **exact closed-form token attributions**, **quantitative token deletion
 4. **Complement NB Threshold Effect Proof**:
    - Proved that in binary classification with unnormalized weights, Complement NB and Multinomial NB have **identical feature weights** ($w_j^{\text{CNB}} \equiv w_j^{\text{MNB}}$). CNB's holdout edge is strictly a decision threshold calibration advantage ($b = 0$), not better feature modeling.
 5. **Corpus Era Artifact Discovery & Shortcut Learning**:
-   - Global explanations exposed historical mailing list shortcuts (`rpm`, `wrote`, `users`, `spambayes`, `razor`, `2002`), demonstrating that models achieve >99% holdout accuracy partly by memorizing 2002 open-source mailing list jargon.
+   - Global explanations exposed historical mailing list shortcuts (`rpm`, `wrote`, `users`, `spambayes`, `razor`, `2002`), demonstrating that models achieve 97% to 99.5% holdout accuracy partly by memorizing 2002 open-source mailing list jargon.
 6. **Production FastAPI Backend & Next.js 14 Dashboard**:
    - Real-time classification and token highlighting (intensity = weight, color-blind accessible with underlines and `(+)`/`(-)` markers).
    - Strict privacy: 20k character limit, sliding-window rate limiting, and zero email text logging.
@@ -36,7 +36,7 @@ Features **exact closed-form token attributions**, **quantitative token deletion
 | **Linear SVM** | 99.29% | 1.0000 | 96.26% | 0.9810 | **0.9469 &plusmn; 0.0200** |
 | **Multinomial Naive Bayes** | 99.11% | 1.0000 | 95.33% | 0.9761 | 0.9277 &plusmn; 0.0112 |
 | **Logistic Regression** | 98.05% | 0.9898 | 90.65% | 0.9463 | 0.9452 &plusmn; 0.0180 |
-| **Random Forest** | 97.16% | 0.9691 | 0.8785 | 0.9216 | 0.9062 &plusmn; 0.0195 |
+| **Random Forest** | 97.16% | 0.9691 | 87.85% | 0.9216 | 0.9062 &plusmn; 0.0195 |
 
 *Complete metrics, grid search tables, and confusion matrices are preserved in `reports/metrics.json`.*
 
@@ -95,7 +95,7 @@ The Next.js dashboard (`web/`) contains 6 dedicated pages:
 3. **Explainability (`/explainability`)**: Global top 25 terms per model, faithfulness deletion curves ($\Delta P$ and $\Delta z$ vs random baseline with 95% bootstrap CI bands), and method-agreement metrics.
 4. **Error Analysis (`/errors`)**: Aggregated diagnostic patterns of False Positives and False Negatives, MIME source distribution, character length distributions, and misleading token frequencies (zero email bodies stored).
 5. **Methodology (`/methodology`)**: Pipeline architecture flow diagram, grouped near-duplicate split rationale, CV grid results highlighting edge-of-grid parameters honestly, and HTML fallback ablation results.
-6. **About / Novelty (`/about`)**: Full rendering of `NOVELTY.md` answering *"What is new here? Does it already exist?"* with verified academic citations.
+6. **About / Novelty (`/about`)**: Full rendering of `NOVELTY.md` answering *"What is new here? Does it already exist?"* with academic citations.
 
 ---
 

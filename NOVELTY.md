@@ -15,25 +15,25 @@ To maintain scientific integrity, we explicitly acknowledge that several baselin
 
 ## 2. What Is New Here (Project Contributions)
 
-While the underlying algorithms exist, standard academic implementations and student projects often apply naive train/test splits, arbitrary hyperparameter defaults, unablated preprocessing, and qualitative "visual inspections" of explanations without quantitative evaluation. 
+While the underlying algorithms exist, an initial naive implementation (such as in our own first run) often encounters common pitfalls: naive random train/test splits, default smoothing parameters, unablated preprocessing, and qualitative "visual inspections" of explanations without quantitative evaluation. 
 
 This project contributes five specific axes of methodological and empirical rigor:
 
 ### A. Near-Duplicate-Aware Grouped Evaluation
-- **Standard Pitfall**: Real-world spam campaigns frequently send slight textual variations of identical templates. In random splits or naive $k$-fold cross-validation, near-identical templates leak into both train and test splits, artificially inflating holdout scores.
+- **Our Initial First-Run Pitfall**: In our first run, naive random splitting or standard cross-validation allowed slight textual variations of identical campaign templates to leak across train and test partitions, artificially inflating holdout scores.
 - **Our Contribution**: We constructed an automated character-level TF-IDF similarity screen (4–5 character n-grams at cosine similarity $\ge 0.95$) that groups template variations into connected components. Evaluation uses `StratifiedGroupKFold`, mathematically guaranteeing that no near-duplicate cluster spans across train and holdout partitions or cross-validation folds.
 
 ### B. Fair Tuning and Elimination of Artificial Bias
-- **Standard Pitfall**: Academic comparisons frequently present Naive Bayes with default smoothing ($\alpha=1.0$), causing it to underperform compared to tuned linear models.
-- **Our Contribution**: Controlled grid search on training data only revealed that widening the smoothing grid to $\alpha=0.01$ raises Multinomial Naive Bayes spam F1 from 0.64 to 0.98, demonstrating that previously reported "weaknesses" in Naive Bayes on this dataset were artifacts of restricted search ranges rather than algorithmic failure.
+- **Our Initial First-Run Pitfall**: In our own initial baseline run, Naive Bayes was evaluated with scikit-learn's default smoothing ($\alpha=1.0$), causing it to underperform compared to tuned linear models.
+- **Our Contribution**: Controlled grid search on training data only revealed that widening the smoothing grid to $\alpha=0.01$ raises Multinomial Naive Bayes spam F1 from 0.64 to 0.98, demonstrating that the apparent weakness of Naive Bayes observed in our own initial run was an artifact of a restricted search range rather than algorithmic failure.
 - **Complement NB Threshold Effect**: In binary classification without length normalization (`norm=False`), Complement NB and Multinomial NB learn **identical feature weights** ($w_j^{\text{CNB}} \equiv w_j^{\text{MNB}}$); they differ solely in the decision intercept (the prior log-odds: $b = 0$ for CNB vs $b = \log(N_{\text{spam}}/N_{\text{ham}}) \approx -1.68$ for MNB). Consequently, Complement NB's holdout advantage (0.9858 vs 0.9761 F1, catching 2 additional spam emails) is a **decision threshold effect**, not better feature modelling.
 
 ### C. Controlled HTML-Fallback Ablation
-- **Standard Pitfall**: Email parsers either discard HTML parts (losing spam payload) or blindly strip tags without measuring the differential impact across model families.
-- **Our Contribution**: A paired ablation across identical splits evaluated models trained on `plain text only` versus `plain text + HTML fallback`. We proved that the HTML fallback hypothesis is **model-dependent**: fallback raised Naive Bayes spam recall dramatically (from 0.7850 to 0.9533) by recovering key vocabulary, but slightly lowered Logistic Regression recall (0.9159 to 0.9065) due to noisy markup terms.
+- **Our Initial First-Run Pitfall**: In our initial pipeline, email parsing either discarded HTML parts or stripped markup without measuring the differential impact across model families.
+- **Our Contribution**: A paired ablation across identical splits evaluated models trained on `plain text only` versus `plain text + HTML fallback`. In this run, the effect differed by model; markup noise is a possible but untested explanation: fallback raised Naive Bayes spam recall dramatically (from 0.7850 to 0.9533) by recovering key vocabulary, but slightly lowered Logistic Regression recall (0.9159 to 0.9065).
 
 ### D. Quantitative Faithfulness Evaluation Across Model Families
-- **Standard Pitfall**: Most XAI studies show sample attribution bar charts and declare the model "explainable" without verifying whether the attributed tokens truly drive the classifier's decisions.
+- **Our Initial First-Run Pitfall**: In our initial exploration, sample attribution bar charts were inspected qualitatively without verifying whether the attributed tokens truly drive the classifier's decisions under quantitative perturbation.
 - **Our Contribution**: We implemented a formal, quantitative **token deletion test** on holdout spam emails correctly classified by all five models ($n=87$). We note that restricting evaluation to mutual successes controls the comparison set across models, but introduces an easy-case benchmark bias. We measured the drop in both predicted spam probability ($\Delta P$) and log-odds / decision score ($\Delta z$) when removing top-$k$ tokens ($k \in \{1, 3, 5, 10\}$), compared against an empirical baseline of deleting $k$ random recognized tokens (20 independent repeats per email, with 95% bootstrap confidence intervals).
 - **Exact Completeness**: All exact explainers satisfy completeness: `intercept + sum(tokens) == model_score` to within $10^{-13}$ numerical precision (verified by automated tests in `tests/test_explain.py`).
 - **Correction of Deletion Matching**: Token deletion matching in raw text was corrected after the initial run to account for non-word punctuation separators (such as dots in URLs) and intermediate stop words within bigrams.
@@ -41,7 +41,7 @@ This project contributes five specific axes of methodological and empirical rigo
 - **TF-IDF L2 Rescaling Diagnosis**: In raw text deletion, removing a token reduces the document vector norm $\|x\|_2$, which mathematically rescales all remaining active tokens upward by $1 / \sqrt{1 - x_{\text{deleted}}^2}$. For messages with dozens of remaining spam features, this upward rescaling is a likely diagnosis for why 3 of 87 emails at $k=1$ did not exceed random deletion, though this is framed as a diagnosis rather than a definitively proven causal result.
 
 ### E. Cross-Method Agreement and Objective Discrepancy
-- **Standard Pitfall**: Assuming all explainer methods should produce identical rankings.
+- **Our Initial First-Run Pitfall**: In our early design, we initially assumed different explainer methods would produce identical token rankings across model families.
 - **Our Contribution**: We evaluated rank correlation (Spearman $\rho$) and Top-$k$ Jaccard overlap on shared active unigram tokens across $n=20–30$ emails (sample size selected due to computational simulation cost of repeated LIME perturbations):
   - For linear models, LIME demonstrates moderate-to-strong rank correlation ($\rho \approx 0.82–0.86$), confirming its utility as a local linear surrogate, though top-$k$ set overlap ($J \approx 0.22–0.28$) remains moderate. Hypothesis: this discrepancy arises because LIME optimizes an $L_2$-regularized objective predicting probability shifts under random masks, whereas exact attribution evaluates unregularized feature weights in logit space.
   - For Naive Bayes, rank correlation with LIME is markedly lower ($\rho \approx 0.43$). Hypotheses: (1) Naive Bayes is strictly additive in log-space ($\text{logit} = b + \sum x_j w_j$), but extreme probability saturation near 0 and 1 creates a flat, step-like probability surface that introduces severe noise into LIME's probability-difference surrogate; and (2) objective discrepancy between probability space and log-odds.
@@ -80,6 +80,7 @@ Global feature attribution revealed critical dataset artifacts:
    - Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). ""Why should I trust you?": Explaining the predictions of any classifier". In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (pp. 1135–1144).
 5. **Unified Feature Attribution (SHAP)**:
    - Lundberg, S. M., & Lee, S. I. (2017). "A unified approach to interpreting model predictions". In *Advances in Neural Information Processing Systems (NeurIPS 2017)* (pp. 4765–4774).
-6. **Faithfulness and Token Perturbation Evaluation in NLP**:
+6. **Perturbation-based evaluation of explanations (originally images)**:
+   - Samek, W., Binder, A., Montavon, G., Lapuschkin, S., & Müller, K. R. (2017). "Evaluating the visualization of what a deep neural network has learned". *IEEE Transactions on Neural Networks and Learning Systems*, 28(11), 2660–2673.
+7. **Faithfulness and Token Erasure in NLP**:
    - DeYoung, J., Jain, S., Rajani, N. F., Lehman, E., Xiong, C., Socher, R., & Wallace, B. C. (2020). "ERASER: A Benchmark to Evaluate Rationalized NLP Models". In *Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL 2020)* (pp. 4443–4458).
-   - Samek, W., Binder, A., Montavon, G., Lapuschkin, S., & Müller, K. R. (2016). "Evaluating the visualization of what a deep neural network has learned". *IEEE Transactions on Neural Networks and Learning Systems*, 28(11), 2660–2673.
