@@ -44,7 +44,9 @@ def explain_exact_linear(
         tokens.append({
             "token": str(feature_names[idx]),
             "weight": c,
+            "abs_weight": abs(c),
             "sign": "+" if c >= 0 else "-",
+            "indication": "spam" if c >= 0 else "ham",
             "tfidf": float(val),
             "coefficient": float(coef[idx]),
         })
@@ -116,7 +118,9 @@ def explain_exact_naive_bayes(
         tokens.append({
             "token": str(feature_names[idx]),
             "weight": c,
+            "abs_weight": abs(c),
             "sign": "+" if c >= 0 else "-",
+            "indication": "spam" if c >= 0 else "ham",
             "tfidf": float(val),
             "log_odds_weight": float(w[idx]),
         })
@@ -183,7 +187,9 @@ def explain_lime(
         tokens.append({
             "token": str(token),
             "weight": w_val,
+            "abs_weight": abs(w_val),
             "sign": "+" if w_val >= 0 else "-",
+            "indication": "spam" if w_val >= 0 else "ham",
         })
 
     # Sort by absolute weight

@@ -80,7 +80,9 @@ class ExplainRequest(BaseModel):
 class TokenAttribution(BaseModel):
     token: str
     weight: float
+    abs_weight: Optional[float] = None
     sign: str
+    indication: Optional[str] = None
     tfidf: Optional[float] = None
     coefficient: Optional[float] = None
 

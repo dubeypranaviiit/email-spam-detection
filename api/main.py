@@ -273,7 +273,7 @@ async def explain_prediction(request: ExplainRequest) -> ExplainResponse:
 @app.get("/explain/global", response_model=GlobalTermsResponse)
 async def get_global_terms(
     model: str = Query(default="logistic_regression", description="Model name or tag"),
-    top_k: int = Query(default=25, ge=5, le=50),
+    top_k: int = Query(default=25, ge=1, le=100),
 ) -> GlobalTermsResponse:
     """Return top spam-indicating and ham-indicating vocabulary terms globally for a model."""
     try:
