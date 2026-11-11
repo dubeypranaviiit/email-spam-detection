@@ -1,4 +1,4 @@
-.PHONY: all prepare train explain test api docker-build docker-run
+.PHONY: all prepare train explain test api docker-build docker-run docker-compose-up docker-compose-down
 
 all:
 	python scripts/build_all.py
@@ -23,3 +23,9 @@ docker-build:
 
 docker-run:
 	docker run -p 8000:8000 email-spam-api
+
+docker-compose-up:
+	docker compose up --build
+
+docker-compose-down:
+	docker compose down

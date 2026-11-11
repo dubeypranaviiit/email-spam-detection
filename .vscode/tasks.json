@@ -58,6 +58,39 @@
       "command": "streamlit run app.py",
       "isBackground": true,
       "problemMatcher": []
+    },
+    {
+      "label": "Docker: Start All Services (Compose Up)",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "spam-docker",
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Docker: Stop All Services (Compose Down)",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "spam-docker",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Docker: View Live Logs",
+      "type": "shell",
+      "command": "docker compose logs -f",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "group": "spam-docker",
+        "reveal": "always"
+      }
     }
   ]
 }

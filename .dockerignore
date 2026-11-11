@@ -1,0 +1,17 @@
+.git
+.github
+.vscode
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.local
+.venv
+venv
+env
+web/
+data/raw/
+reports/figures/
+scratch/
