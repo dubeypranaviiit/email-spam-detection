@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { api, ExplainResponse, PredictResponse, TokenContribution } from "@/lib/api";
-import { formatPercent, formatDec } from "@/lib/utils";
+import { formatDec, formatSpamProbability } from "@/lib/utils";
 import {
   BarChart,
   Bar,
@@ -18,11 +18,12 @@ import {
   ShieldAlert,
   ShieldCheck,
   Zap,
-  Info,
   RefreshCw,
   Sparkles,
   AlertTriangle,
   FileText,
+  Eye,
+  Edit3,
 } from "lucide-react";
 
 const SAMPLE_SPAM = `Subject: Urgent Refinance Notice: Lower Your Rate to 3.25% Today!
@@ -54,6 +55,7 @@ export default function DetectorPage() {
   const [model, setModel] = useState<string>("logistic_regression");
   const [method, setMethod] = useState<string>("exact");
   const [topK, setTopK] = useState<number>(10);
+  const [activeTab, setActiveTab] = useState<"edit" | "highlight">("edit");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +78,9 @@ export default function DetectorPage() {
       // 2. Run explanation
       const expl = await api.explain({ text, model, method, top_k: topK });
       setExplanation(expl);
+
+      // Automatically switch to inline highlight view so the user sees it immediately
+      setActiveTab("highlight");
     } catch (err: any) {
       setError(err.message || "Failed to analyze email.");
     } finally {
@@ -83,40 +88,74 @@ export default function DetectorPage() {
     }
   };
 
-  // Build highlighted email text segments
+  // Build highlighted email text segments supporting unigrams, bigrams, and proportional intensity
   const renderHighlightedText = () => {
-    if (!explanation || explanation.tokens.length === 0) {
-      return <div className="whitespace-pre-wrap font-sans text-sm">{text}</div>;
+    if (!explanation || !explanation.tokens || explanation.tokens.length === 0) {
+      return (
+        <div className="whitespace-pre-wrap font-sans text-sm text-muted-foreground p-4 bg-secondary/30 rounded border border-border">
+          {text}
+        </div>
+      );
     }
 
-    // Map token weights for fast case-insensitive lookup
+    // Sort tokens by descending string length so multi-word bigrams match before single unigrams
+    const sortedTokens = [...explanation.tokens].sort(
+      (a, b) => b.token.length - a.token.length
+    );
+
+    // Map token weights by lowercase
     const tokenMap = new Map<string, TokenContribution>();
     for (const t of explanation.tokens) {
       tokenMap.set(t.token.toLowerCase(), t);
     }
 
-    // Tokenize text keeping spaces and punctuation intact
-    const wordsAndSpaces = text.split(/(\s+|[^\w\s]+)/);
+    // Max weight for relative intensity scaling
+    const maxWeight = Math.max(
+      ...explanation.tokens.map((t) => Math.abs(t.weight)),
+      0.001
+    );
+
+    // Build regex with word boundaries escaping special regex characters
+    const escapedPatterns = sortedTokens.map((t) =>
+      t.token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    );
+    const regex = new RegExp(`(\\b(?:${escapedPatterns.join("|")})\\b)`, "gi");
+
+    const segments = text.split(regex);
 
     return (
-      <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground bg-card p-4 rounded-md border border-border">
-        {wordsAndSpaces.map((part, idx) => {
-          const lower = part.toLowerCase();
-          const match = tokenMap.get(lower);
-
+      <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground bg-card p-5 rounded-md border border-border shadow-inner">
+        {segments.map((seg, idx) => {
+          const match = tokenMap.get(seg.toLowerCase());
           if (!match) {
-            return <span key={idx}>{part}</span>;
+            return <span key={idx}>{seg}</span>;
           }
 
-          const isSpam = match.sign === "+";
+          const isSpam = match.sign === "+" || match.weight > 0;
+          // Calculate proportional color intensity between 0.20 and 0.85
+          const intensity = Math.min(
+            0.85,
+            0.2 + (Math.abs(match.weight) / maxWeight) * 0.55
+          );
+
           return (
             <span
               key={idx}
-              className={isSpam ? "token-spam" : "token-ham"}
-              title={`Token: "${match.token}" | Weight: ${match.weight > 0 ? "+" : ""}${match.weight.toFixed(4)} (${match.indication})`}
+              style={{
+                backgroundColor: isSpam
+                  ? `rgba(239, 68, 68, ${intensity})`
+                  : `rgba(16, 185, 129, ${intensity})`,
+                borderBottom: `2.5px solid ${isSpam ? "#ef4444" : "#10b981"}`,
+              }}
+              className={`inline-block px-1 py-0.5 rounded mx-0.5 font-medium transition-all ${
+                isSpam
+                  ? "text-rose-950 dark:text-rose-100"
+                  : "text-emerald-950 dark:text-emerald-100"
+              }`}
+              title={`Token: "${match.token}" | Signed Weight: ${match.weight > 0 ? "+" : ""}${match.weight.toFixed(4)} (${match.indication || (isSpam ? "spam" : "ham")})`}
             >
-              {part}
-              <span className="text-[10px] ml-0.5 opacity-80 font-mono font-bold">
+              {seg}
+              <span className="text-[10px] ml-1 font-mono font-bold select-none opacity-90">
                 ({match.sign})
               </span>
             </span>
@@ -127,13 +166,17 @@ export default function DetectorPage() {
   };
 
   // Format bar chart data
-  const barChartData = explanation?.tokens.map((t) => ({
-    name: t.token,
-    weight: parseFloat(t.weight.toFixed(4)),
-    absWeight: parseFloat(t.abs_weight.toFixed(4)),
-    indication: t.indication,
-    sign: t.sign,
-  })) || [];
+  const barChartData =
+    explanation?.tokens.map((t) => ({
+      name: t.token,
+      weight: parseFloat(t.weight.toFixed(4)),
+      absWeight: parseFloat((t.abs_weight || Math.abs(t.weight)).toFixed(4)),
+      indication: t.indication || (t.weight >= 0 ? "spam" : "ham"),
+      sign: t.sign,
+    })) || [];
+
+  // Dynamic height for the horizontal bar chart: scale by token count to prevent overlap
+  const chartHeight = Math.max(280, barChartData.length * 28 + 40);
 
   return (
     <div className="space-y-8">
@@ -143,7 +186,7 @@ export default function DetectorPage() {
           Live Detector &amp; Exact Token Attribution
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Classify arbitrary email text in real time with transparent, mathematically faithful feature contributions.
+          Classify email text in real time with transparent, mathematically faithful feature contributions and inline word highlights.
         </p>
       </div>
 
@@ -152,22 +195,55 @@ export default function DetectorPage() {
         <div className="lg:col-span-7 space-y-4">
           <div className="p-5 rounded-lg bg-card border border-border shadow-sm space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <label htmlFor="email-text" className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-primary" />
-                <span>Email Content</span>
-              </label>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-muted-foreground">Load Sample:</span>
+              {/* View Switcher Tabs */}
+              <div className="flex items-center space-x-1 bg-secondary/80 p-0.5 rounded-md border border-border">
                 <button
                   type="button"
-                  onClick={() => setText(SAMPLE_SPAM)}
+                  onClick={() => setActiveTab("edit")}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                    activeTab === "edit"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Raw Text Editor</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("highlight")}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+                    activeTab === "highlight"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5 text-primary" />
+                  <span>Inline Token Highlights</span>
+                  {explanation && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
+                  )}
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-muted-foreground">Load:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setText(SAMPLE_SPAM);
+                    setActiveTab("edit");
+                  }}
                   className="px-2.5 py-1 text-xs rounded bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 transition-colors"
                 >
                   Spam Sample
                 </button>
                 <button
                   type="button"
-                  onClick={() => setText(SAMPLE_HAM)}
+                  onClick={() => {
+                    setText(SAMPLE_HAM);
+                    setActiveTab("edit");
+                  }}
                   className="px-2.5 py-1 text-xs rounded bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40 hover:bg-emerald-100 transition-colors"
                 >
                   Ham Sample
@@ -175,15 +251,42 @@ export default function DetectorPage() {
               </div>
             </div>
 
-            <textarea
-              id="email-text"
-              rows={11}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Paste email headers and body text here..."
-              maxLength={20000}
-              className="w-full p-3 rounded-md border border-input bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary leading-relaxed"
-            />
+            {/* Editor or Inline Highlight Display */}
+            {activeTab === "edit" ? (
+              <textarea
+                id="email-text"
+                rows={11}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Paste email headers and body text here..."
+                maxLength={20000}
+                className="w-full p-3 rounded-md border border-input bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary leading-relaxed"
+              />
+            ) : (
+              <div className="space-y-2">
+                {renderHighlightedText()}
+                <div className="flex flex-wrap items-center justify-between text-xs text-muted-foreground px-1">
+                  <div className="flex items-center space-x-4">
+                    <span className="flex items-center space-x-1">
+                      <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block" />
+                      <span>Red = Spam (+)</span>
+                    </span>
+                    <span className="flex items-center space-x-1">
+                      <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />
+                      <span>Green = Ham (-)</span>
+                    </span>
+                    <span className="opacity-80">Solid underlines &amp; sign markers for accessibility</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("edit")}
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Edit text
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Limit: 20,000 characters &bull; Email bodies are never logged or stored</span>
@@ -294,28 +397,77 @@ export default function DetectorPage() {
                 </span>
               </div>
 
-              {/* Probability Meter */}
+              {/* Probability Meter & Decision Margin */}
               <div>
                 <div className="flex justify-between text-xs font-medium text-muted-foreground mb-1.5">
-                  <span>Spam Probability: <strong className="text-foreground">{formatPercent(prediction.spam_probability)}</strong></span>
-                  <span>Confidence: <strong className="text-foreground">{formatPercent(prediction.confidence ?? Math.max(prediction.spam_probability, 1 - prediction.spam_probability))}</strong></span>
+                  <span>
+                    Spam Probability:{" "}
+                    <strong className="text-foreground text-sm">
+                      {formatSpamProbability(prediction.spam_probability)}
+                    </strong>
+                  </span>
+                  <span>
+                    Decision Margin:{" "}
+                    <strong className="font-mono text-foreground font-semibold">
+                      |z| = {explanation ? Math.abs(explanation.score).toFixed(3) : "—"}
+                    </strong>
+                  </span>
                 </div>
                 <div className="w-full bg-secondary rounded-full h-3 overflow-hidden border border-border">
                   <div
                     className={`h-full transition-all duration-500 rounded-full ${
                       prediction.label_name === "spam" ? "bg-rose-500" : "bg-emerald-500"
                     }`}
-                    style={{ width: `${Math.max(prediction.spam_probability * 100, 3)}%` }}
+                    style={{
+                      width: `${Math.max(
+                        Math.min(prediction.spam_probability * 100, 100),
+                        3
+                      )}%`,
+                    }}
                   />
                 </div>
               </div>
 
               {explanation && (
                 <div className="text-xs text-muted-foreground pt-1 flex justify-between">
-                  <span>Decision Score / Logit: <code className="font-mono text-foreground font-semibold">{formatDec(explanation.score, 3)}</code></span>
-                  <span>Base Intercept: <code className="font-mono text-foreground">{formatDec(explanation.base_value, 3)}</code></span>
+                  <span>
+                    Decision Score / Logit:{" "}
+                    <code className="font-mono text-foreground font-semibold">
+                      {formatDec(explanation.score, 3)}
+                    </code>
+                  </span>
+                  <span>
+                    Base Intercept:{" "}
+                    <code className="font-mono text-foreground">
+                      {formatDec(explanation.base_value, 3)}
+                    </code>
+                  </span>
                 </div>
               )}
+
+              {/* Calibration / Saturation Visible Captions */}
+              <div className="text-[11px] text-muted-foreground bg-secondary/70 p-2.5 rounded border border-border leading-relaxed">
+                {model.includes("svm") && (
+                  <div>
+                    <span className="font-semibold text-foreground">SVM Calibration:</span> SVM probability is mapped via standard logistic sigmoid σ(z) of the margin decision score, not Platt-calibrated.
+                  </div>
+                )}
+                {(model.includes("naive_bayes") || model.includes("complement_nb")) && (
+                  <div>
+                    <span className="font-semibold text-foreground">NB Saturation:</span> Naive Bayes assumes conditional feature independence, yielding overconfident/saturated probabilities in log space.
+                  </div>
+                )}
+                {model.includes("logistic") && (
+                  <div>
+                    <span className="font-semibold text-foreground">Logit Modeling:</span> Logistic Regression models log-odds directly with uncalibrated L2 regularization shrinkage.
+                  </div>
+                )}
+                {model.includes("random_forest") && (
+                  <div>
+                    <span className="font-semibold text-foreground">Ensemble Averaging:</span> Random Forest probability represents the empirical fraction of trees voting spam.
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="p-8 rounded-lg bg-card border border-border border-dashed text-center text-muted-foreground space-y-2">
@@ -327,30 +479,32 @@ export default function DetectorPage() {
             </div>
           )}
 
-          {/* Top Contributing Tokens Chart */}
+          {/* Top Contributing Tokens Chart with non-overlapping YAxis */}
           {explanation && barChartData.length > 0 && (
             <div className="p-5 rounded-lg bg-card border border-border shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-foreground">Top Feature Contributions</h3>
                 <span className="text-xs text-muted-foreground font-mono">
-                  {explanation.method}
+                  {explanation.method} ({barChartData.length} tokens)
                 </span>
               </div>
 
-              <div className="h-64 w-full">
+              {/* Scaled container height based on token count */}
+              <div style={{ height: `${chartHeight}px` }} className="w-full pt-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
                     data={barChartData}
-                    margin={{ top: 5, right: 20, left: 35, bottom: 5 }}
+                    margin={{ top: 5, right: 25, left: 10, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
                     <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                     <YAxis
                       type="category"
                       dataKey="name"
-                      tick={{ fill: "var(--foreground)", fontSize: 11 }}
-                      width={65}
+                      interval={0}
+                      tick={{ fill: "var(--foreground)", fontSize: 10 }}
+                      width={95}
                     />
                     <Tooltip
                       formatter={(val: any) => [val, "Weight"]}
@@ -361,7 +515,7 @@ export default function DetectorPage() {
                         fontSize: "12px",
                       }}
                     />
-                    <ReferenceLine x={0} stroke="var(--border)" />
+                    <ReferenceLine x={0} stroke="var(--border)" strokeWidth={1.5} />
                     <Bar dataKey="weight" radius={[0, 4, 4, 0]}>
                       {barChartData.map((entry, index) => (
                         <Cell
@@ -374,7 +528,7 @@ export default function DetectorPage() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="flex items-center justify-center space-x-6 text-xs text-muted-foreground pt-1 border-t border-border">
+              <div className="flex items-center justify-center space-x-6 text-xs text-muted-foreground pt-2 border-t border-border">
                 <div className="flex items-center space-x-1.5">
                   <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block" />
                   <span>(+) Pushes toward Spam</span>
@@ -388,25 +542,6 @@ export default function DetectorPage() {
           )}
         </div>
       </div>
-
-      {/* Full Highlighted Email View */}
-      {explanation && (
-        <div className="p-6 rounded-lg bg-card border border-border shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border pb-3">
-            <div>
-              <h3 className="text-base font-semibold text-foreground">In-Context Token Highlights</h3>
-              <p className="text-xs text-muted-foreground">
-                Words highlighted in red with <strong className="text-rose-600 dark:text-rose-400">(+)</strong> signal spam; words in green with <strong className="text-emerald-600 dark:text-emerald-400">(-)</strong> signal legitimate ham. Underlines assist color-blind readers.
-              </p>
-            </div>
-            <div className="text-xs text-muted-foreground font-mono bg-secondary px-2.5 py-1 rounded">
-              Method: {explanation.method}
-            </div>
-          </div>
-
-          {renderHighlightedText()}
-        </div>
-      )}
     </div>
   );
 }
