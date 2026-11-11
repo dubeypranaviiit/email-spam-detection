@@ -1,47 +1,126 @@
 {
+  "experimental_setup": {
+    "evaluation_set": "Mutual correctly classified holdout spam emails across all 5 models",
+    "n_emails_per_model": 87,
+    "random_baseline_repeats": 20,
+    "bootstrap_ci_level": 0.95,
+    "bootstrap_iterations": 1000,
+    "token_universe_agreement": "active unigrams present in the email recognized by both methods"
+  },
+  "methodological_hypotheses": {
+    "linear_models_circularity": "For linear models (Logistic Regression, Linear SVM), deletion test is partly circular because exact token weights w_j * x_j are closed-form components of the logit. The most informative evaluations are therefore LIME vs exact and Random Forest vs the linear models.",
+    "naive_bayes_lime_divergence": "Naive Bayes is strictly additive in log-space (log-odds = b + sum x_j w_j). The lower rank correlation observed between exact NB log-odds and LIME is hypothesized to stem from two factors: (1) severe probability saturation/overconfidence in Naive Bayes (predict_proba outputs often cluster within 1e-6 of 0 or 1), creating a nearly flat or step-like probability surface during LIME random token masking; and (2) objective discrepancy: LIME fits an L2-regularized linear surrogate predicting probability shifts, whereas exact attribution decomposes log-odds."
+  },
   "deletion_tests": {
     "logistic_regression": {
       "model": "Logistic Regression",
       "model_tag": "logistic_regression",
       "method_used": "exact",
-      "total_test_spam": 107,
-      "correctly_classified_spam": 50,
+      "n_evaluated": 87,
       "deletion_results": {
         "1": {
           "k": 1,
-          "mean_drop_top_k": 0.03606251073395329,
-          "std_drop_top_k": 0.037721541790639135,
-          "mean_drop_random": 0.003134321308177166,
-          "std_drop_random": 0.00862359356559621,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.028591971385933158,
+          "ci_prob_drop_top_k_95": [
+            0.02219797358454281,
+            0.03580833056061448
+          ],
+          "mean_prob_drop_random": 0.002002449489888387,
+          "ci_prob_drop_random_95": [
+            0.001296410322851276,
+            0.0028729531435883644
+          ],
+          "win_rate_prob_vs_random": 1.0,
+          "mean_score_drop_top_k": 0.47057977475724516,
+          "ci_score_drop_top_k_95": [
+            0.4239548569488864,
+            0.5221976066080872
+          ],
+          "mean_score_drop_random": 0.03935464624476727,
+          "ci_score_drop_random_95": [
+            0.028984959345702284,
+            0.05095675408820989
+          ],
+          "win_rate_score_vs_random": 1.0
         },
         "3": {
           "k": 3,
-          "mean_drop_top_k": 0.09736924078495901,
-          "std_drop_top_k": 0.08524927121845444,
-          "mean_drop_random": 0.009234886698133432,
-          "std_drop_random": 0.014734543594300646,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.0782413086451614,
+          "ci_prob_drop_top_k_95": [
+            0.06376789151687255,
+            0.09439362145881663
+          ],
+          "mean_prob_drop_random": 0.0061934157563028475,
+          "ci_prob_drop_random_95": [
+            0.003869182462437014,
+            0.009405810552781608
+          ],
+          "win_rate_prob_vs_random": 1.0,
+          "mean_score_drop_top_k": 1.0646118426463271,
+          "ci_score_drop_top_k_95": [
+            0.9889195353571022,
+            1.1487480857177597
+          ],
+          "mean_score_drop_random": 0.1198377558726764,
+          "ci_score_drop_random_95": [
+            0.08942522131598561,
+            0.1546615583985221
+          ],
+          "win_rate_score_vs_random": 1.0
         },
         "5": {
           "k": 5,
-          "mean_drop_top_k": 0.1543960616982484,
-          "std_drop_top_k": 0.12468426956278746,
-          "mean_drop_random": 0.018203689627000873,
-          "std_drop_random": 0.019387647835956815,
-          "win_rate_vs_random": 0.98,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.1284020405365165,
+          "ci_prob_drop_top_k_95": [
+            0.10612896630202492,
+            0.1521095954887766
+          ],
+          "mean_prob_drop_random": 0.013906727654644008,
+          "ci_prob_drop_random_95": [
+            0.008254448758577016,
+            0.022597731635776625
+          ],
+          "win_rate_prob_vs_random": 0.9885057471264368,
+          "mean_score_drop_top_k": 1.5008512954776219,
+          "ci_score_drop_top_k_95": [
+            1.408627313885863,
+            1.6037715560798405
+          ],
+          "mean_score_drop_random": 0.20777860669709475,
+          "ci_score_drop_random_95": [
+            0.16042724090628804,
+            0.2659179822752193
+          ],
+          "win_rate_score_vs_random": 0.9885057471264368
         },
         "10": {
           "k": 10,
-          "mean_drop_top_k": 0.27296637810102886,
-          "std_drop_top_k": 0.18645258655601385,
-          "mean_drop_random": 0.03887335102156054,
-          "std_drop_random": 0.02969350199692579,
-          "win_rate_vs_random": 0.98,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.22661702709911183,
+          "ci_prob_drop_top_k_95": [
+            0.19198397886808044,
+            0.26306262877544057
+          ],
+          "mean_prob_drop_random": 0.029332803781180604,
+          "ci_prob_drop_random_95": [
+            0.01780471878974954,
+            0.04683100570789205
+          ],
+          "win_rate_prob_vs_random": 0.9885057471264368,
+          "mean_score_drop_top_k": 2.2012782051067177,
+          "ci_score_drop_top_k_95": [
+            2.0933024344372653,
+            2.3237119552258845
+          ],
+          "mean_score_drop_random": 0.40848758242776173,
+          "ci_score_drop_random_95": [
+            0.32634244038018845,
+            0.5136805453380049
+          ],
+          "win_rate_score_vs_random": 0.9885057471264368
         }
       }
     },
@@ -49,44 +128,111 @@
       "model": "Linear SVM",
       "model_tag": "linear_svm",
       "method_used": "exact",
-      "total_test_spam": 107,
-      "correctly_classified_spam": 50,
+      "n_evaluated": 87,
       "deletion_results": {
         "1": {
           "k": 1,
-          "mean_drop_top_k": 0.02709894297966277,
-          "std_drop_top_k": 0.013277093455853841,
-          "mean_drop_random": 0.0019520341699761745,
-          "std_drop_random": 0.007509601379825915,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.025531439913816664,
+          "ci_prob_drop_top_k_95": [
+            0.022710517494976594,
+            0.028583571260247808
+          ],
+          "mean_prob_drop_random": 0.0018221572652000302,
+          "ci_prob_drop_random_95": [
+            0.001305143354103185,
+            0.00243882050190667
+          ],
+          "win_rate_prob_vs_random": 1.0,
+          "mean_score_drop_top_k": 0.12193577522359351,
+          "ci_score_drop_top_k_95": [
+            0.10895768385055933,
+            0.13591068350967367
+          ],
+          "mean_score_drop_random": 0.009053601381269353,
+          "ci_score_drop_random_95": [
+            0.006398608171538403,
+            0.01234259247537613
+          ],
+          "win_rate_score_vs_random": 1.0
         },
         "3": {
           "k": 3,
-          "mean_drop_top_k": 0.05963419586127882,
-          "std_drop_top_k": 0.021395083119030323,
-          "mean_drop_random": 0.004522079941687658,
-          "std_drop_random": 0.012541784929917294,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.0567848501985094,
+          "ci_prob_drop_top_k_95": [
+            0.05243466597921121,
+            0.061366571527214905
+          ],
+          "mean_prob_drop_random": 0.004974740673877927,
+          "ci_prob_drop_random_95": [
+            0.003569895336850795,
+            0.006635812856857453
+          ],
+          "win_rate_prob_vs_random": 1.0,
+          "mean_score_drop_top_k": 0.264597563134835,
+          "ci_score_drop_top_k_95": [
+            0.2450702995450479,
+            0.28444783277487096
+          ],
+          "mean_score_drop_random": 0.024537513196381186,
+          "ci_score_drop_random_95": [
+            0.017393906793897025,
+            0.03284252146012207
+          ],
+          "win_rate_score_vs_random": 1.0
         },
         "5": {
           "k": 5,
-          "mean_drop_top_k": 0.09041210477479304,
-          "std_drop_top_k": 0.03934454762392769,
-          "mean_drop_random": 0.009574110007469699,
-          "std_drop_random": 0.01768806554890923,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.08355623489622821,
+          "ci_prob_drop_top_k_95": [
+            0.07803070123643799,
+            0.08901264670748164
+          ],
+          "mean_prob_drop_random": 0.009322514363390077,
+          "ci_prob_drop_random_95": [
+            0.00696994031598048,
+            0.012435011609577136
+          ],
+          "win_rate_prob_vs_random": 1.0,
+          "mean_score_drop_top_k": 0.38231848671503516,
+          "ci_score_drop_top_k_95": [
+            0.3592171839932998,
+            0.4068394093329263
+          ],
+          "mean_score_drop_random": 0.04501535514991868,
+          "ci_score_drop_random_95": [
+            0.03380021041679255,
+            0.05971469029183026
+          ],
+          "win_rate_score_vs_random": 1.0
         },
         "10": {
           "k": 10,
-          "mean_drop_top_k": 0.1396633149741232,
-          "std_drop_top_k": 0.04165700797775749,
-          "mean_drop_random": 0.01593156116358106,
-          "std_drop_random": 0.021618733617822624,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.13337055174283052,
+          "ci_prob_drop_top_k_95": [
+            0.1260788251884125,
+            0.1404561458411096
+          ],
+          "mean_prob_drop_random": 0.017015718602626125,
+          "ci_prob_drop_random_95": [
+            0.012685032876037207,
+            0.02243697565853726
+          ],
+          "win_rate_prob_vs_random": 0.9885057471264368,
+          "mean_score_drop_top_k": 0.5936967426323682,
+          "ci_score_drop_top_k_95": [
+            0.5638264485073922,
+            0.6255810716724188
+          ],
+          "mean_score_drop_random": 0.08105765514228282,
+          "ci_score_drop_random_95": [
+            0.06167538884704122,
+            0.10570806818904294
+          ],
+          "win_rate_score_vs_random": 0.9885057471264368
         }
       }
     },
@@ -94,44 +240,111 @@
       "model": "Complement Naive Bayes",
       "model_tag": "complement_nb",
       "method_used": "exact",
-      "total_test_spam": 107,
-      "correctly_classified_spam": 50,
+      "n_evaluated": 87,
       "deletion_results": {
         "1": {
           "k": 1,
-          "mean_drop_top_k": 0.007541268175066591,
-          "std_drop_top_k": 0.034847817136007014,
-          "mean_drop_random": 0.0005100949737516892,
-          "std_drop_random": 0.0023901641058690446,
-          "win_rate_vs_random": 0.56,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.008369413011667211,
+          "ci_prob_drop_top_k_95": [
+            0.002293120515974807,
+            0.015970109465643482
+          ],
+          "mean_prob_drop_random": 0.0009180232196775453,
+          "ci_prob_drop_random_95": [
+            0.00025986246202946024,
+            0.001733435800609513
+          ],
+          "win_rate_prob_vs_random": 0.5057471264367817,
+          "mean_score_drop_top_k": 0.6571099640761172,
+          "ci_score_drop_top_k_95": [
+            0.4931970725525614,
+            0.8362687049133904
+          ],
+          "mean_score_drop_random": 0.26415711054567553,
+          "ci_score_drop_random_95": [
+            0.21905843164257555,
+            0.31812393350365487
+          ],
+          "win_rate_score_vs_random": 0.5517241379310345
         },
         "3": {
           "k": 3,
-          "mean_drop_top_k": 0.045562969527604406,
-          "std_drop_top_k": 0.12224228508796134,
-          "mean_drop_random": 0.0045748323866541644,
-          "std_drop_random": 0.010457414955293634,
-          "win_rate_vs_random": 0.8,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.03484111810893381,
+          "ci_prob_drop_top_k_95": [
+            0.011441503423157733,
+            0.062427605350199505
+          ],
+          "mean_prob_drop_random": 0.0037582204278099685,
+          "ci_prob_drop_random_95": [
+            0.0011829106776475211,
+            0.006705956361571471
+          ],
+          "win_rate_prob_vs_random": 0.6896551724137931,
+          "mean_score_drop_top_k": 1.767242498499848,
+          "ci_score_drop_top_k_95": [
+            1.5343883075561449,
+            1.9824112572138957
+          ],
+          "mean_score_drop_random": 0.8082971248390929,
+          "ci_score_drop_random_95": [
+            0.6862535670704968,
+            0.9564102541783579
+          ],
+          "win_rate_score_vs_random": 0.8390804597701149
         },
         "5": {
           "k": 5,
-          "mean_drop_top_k": 0.09636505467716733,
-          "std_drop_top_k": 0.23290838873137532,
-          "mean_drop_random": 0.012668384468904581,
-          "std_drop_random": 0.018637540839468277,
-          "win_rate_vs_random": 0.8,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.05520031705212275,
+          "ci_prob_drop_top_k_95": [
+            0.020633721740140522,
+            0.09170243279637356
+          ],
+          "mean_prob_drop_random": 0.008123493832287242,
+          "ci_prob_drop_random_95": [
+            0.0028112658337253113,
+            0.014333113180421209
+          ],
+          "win_rate_prob_vs_random": 0.7011494252873564,
+          "mean_score_drop_top_k": 2.8247635031918983,
+          "ci_score_drop_top_k_95": [
+            2.474437703685764,
+            3.1634738722983697
+          ],
+          "mean_score_drop_random": 1.4108815354279012,
+          "ci_score_drop_random_95": [
+            1.2038662485412857,
+            1.65515441121807
+          ],
+          "win_rate_score_vs_random": 0.8045977011494253
         },
         "10": {
           "k": 10,
-          "mean_drop_top_k": 0.13666945831427024,
-          "std_drop_top_k": 0.28816410467926096,
-          "mean_drop_random": 0.03301860249691028,
-          "std_drop_random": 0.02626317599515716,
-          "win_rate_vs_random": 0.78,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.09196266226543529,
+          "ci_prob_drop_top_k_95": [
+            0.04715258403536121,
+            0.13870740183629718
+          ],
+          "mean_prob_drop_random": 0.022289301657257253,
+          "ci_prob_drop_random_95": [
+            0.006328195094244672,
+            0.0442376084607001
+          ],
+          "win_rate_prob_vs_random": 0.7011494252873564,
+          "mean_score_drop_top_k": 4.868588092073538,
+          "ci_score_drop_top_k_95": [
+            4.42178289256496,
+            5.340866352075838
+          ],
+          "mean_score_drop_random": 2.66690855602441,
+          "ci_score_drop_random_95": [
+            2.287804418057411,
+            3.1153498274388576
+          ],
+          "win_rate_score_vs_random": 0.8275862068965517
         }
       }
     },
@@ -139,44 +352,111 @@
       "model": "Multinomial Naive Bayes",
       "model_tag": "naive_bayes",
       "method_used": "exact",
-      "total_test_spam": 107,
-      "correctly_classified_spam": 50,
+      "n_evaluated": 87,
       "deletion_results": {
         "1": {
           "k": 1,
-          "mean_drop_top_k": 0.009035686889882797,
-          "std_drop_top_k": 0.03506339767794543,
-          "mean_drop_random": 0.0012583451940134077,
-          "std_drop_random": 0.005250101613705934,
-          "win_rate_vs_random": 0.5,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.008369413011667187,
+          "ci_prob_drop_top_k_95": [
+            0.0022931205159748003,
+            0.015970109465643437
+          ],
+          "mean_prob_drop_random": 0.0009180232196775459,
+          "ci_prob_drop_random_95": [
+            0.0002598624620294662,
+            0.0017334358006095092
+          ],
+          "win_rate_prob_vs_random": 0.5057471264367817,
+          "mean_score_drop_top_k": 0.6571099640761169,
+          "ci_score_drop_top_k_95": [
+            0.4931970725525611,
+            0.8362687049133901
+          ],
+          "mean_score_drop_random": 0.26415711054567487,
+          "ci_score_drop_random_95": [
+            0.21905843164257446,
+            0.31812393350365403
+          ],
+          "win_rate_score_vs_random": 0.5517241379310345
         },
         "3": {
           "k": 3,
-          "mean_drop_top_k": 0.059813223441528195,
-          "std_drop_top_k": 0.1805166768940429,
-          "mean_drop_random": 0.006797288199017373,
-          "std_drop_random": 0.017336008431009454,
-          "win_rate_vs_random": 0.78,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.03484111810893377,
+          "ci_prob_drop_top_k_95": [
+            0.0114415034231577,
+            0.06242760535019947
+          ],
+          "mean_prob_drop_random": 0.003758220427809963,
+          "ci_prob_drop_random_95": [
+            0.0011829106776475146,
+            0.0067059563615714645
+          ],
+          "win_rate_prob_vs_random": 0.6896551724137931,
+          "mean_score_drop_top_k": 1.7672424984998454,
+          "ci_score_drop_top_k_95": [
+            1.5343883075561426,
+            1.9824112572138943
+          ],
+          "mean_score_drop_random": 0.8082971248390926,
+          "ci_score_drop_random_95": [
+            0.686253567070497,
+            0.9564102541783568
+          ],
+          "win_rate_score_vs_random": 0.8390804597701149
         },
         "5": {
           "k": 5,
-          "mean_drop_top_k": 0.08494203490943995,
-          "std_drop_top_k": 0.22969881394528108,
-          "mean_drop_random": 0.02009228781025131,
-          "std_drop_random": 0.024007429928710616,
-          "win_rate_vs_random": 0.76,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.05520031705212271,
+          "ci_prob_drop_top_k_95": [
+            0.02063372174014048,
+            0.0917024327963735
+          ],
+          "mean_prob_drop_random": 0.008123493832287235,
+          "ci_prob_drop_random_95": [
+            0.0028112658337253035,
+            0.014333113180421193
+          ],
+          "win_rate_prob_vs_random": 0.7011494252873564,
+          "mean_score_drop_top_k": 2.8247635031918956,
+          "ci_score_drop_top_k_95": [
+            2.474437703685762,
+            3.1634738722983684
+          ],
+          "mean_score_drop_random": 1.4108815354279005,
+          "ci_score_drop_random_95": [
+            1.203866248541285,
+            1.6551544112180685
+          ],
+          "win_rate_score_vs_random": 0.8045977011494253
         },
         "10": {
           "k": 10,
-          "mean_drop_top_k": 0.12773565643254173,
-          "std_drop_top_k": 0.28039551308890226,
-          "mean_drop_random": 0.0373642665497938,
-          "std_drop_random": 0.02675325123402236,
-          "win_rate_vs_random": 0.76,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.09196266226543517,
+          "ci_prob_drop_top_k_95": [
+            0.04715258403536114,
+            0.13870740183629704
+          ],
+          "mean_prob_drop_random": 0.02228930165725724,
+          "ci_prob_drop_random_95": [
+            0.006328195094244667,
+            0.04423760846070009
+          ],
+          "win_rate_prob_vs_random": 0.7011494252873564,
+          "mean_score_drop_top_k": 4.868588092073536,
+          "ci_score_drop_top_k_95": [
+            4.421782892564957,
+            5.340866352075834
+          ],
+          "mean_score_drop_random": 2.66690855602441,
+          "ci_score_drop_random_95": [
+            2.2878044180574095,
+            3.115349827438857
+          ],
+          "win_rate_score_vs_random": 0.8275862068965517
         }
       }
     },
@@ -184,70 +464,267 @@
       "model": "Random Forest",
       "model_tag": "random_forest",
       "method_used": "lime",
-      "total_test_spam": 107,
-      "correctly_classified_spam": 50,
+      "n_evaluated": 87,
       "deletion_results": {
         "1": {
           "k": 1,
-          "mean_drop_top_k": 0.04366666666666667,
-          "std_drop_top_k": 0.030802236571031292,
-          "mean_drop_random": 0.002599999999999999,
-          "std_drop_random": 0.013120600185384095,
-          "win_rate_vs_random": 0.92,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.04415708812260536,
+          "ci_prob_drop_top_k_95": [
+            0.038505747126436764,
+            0.0503831417624521
+          ],
+          "mean_prob_drop_random": 0.0036542145593869715,
+          "ci_prob_drop_random_95": [
+            0.0023418342911877372,
+            0.005258979885057467
+          ],
+          "win_rate_prob_vs_random": 0.9310344827586207,
+          "mean_score_drop_top_k": 0.43947814260247325,
+          "ci_score_drop_top_k_95": [
+            0.28049733595163523,
+            0.7047130885407709
+          ],
+          "mean_score_drop_random": 0.107832728580866,
+          "ci_score_drop_random_95": [
+            0.02677628901840689,
+            0.24691258294321727
+          ],
+          "win_rate_score_vs_random": 0.9425287356321839
         },
         "3": {
           "k": 3,
-          "mean_drop_top_k": 0.08016666666666668,
-          "std_drop_top_k": 0.05158299676788422,
-          "mean_drop_random": 0.008025,
-          "std_drop_random": 0.021927328752206758,
-          "win_rate_vs_random": 1.0,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.085727969348659,
+          "ci_prob_drop_top_k_95": [
+            0.07538074712643678,
+            0.09741379310344823
+          ],
+          "mean_prob_drop_random": 0.010009578544061296,
+          "ci_prob_drop_random_95": [
+            0.007082734674329496,
+            0.013372725095785432
+          ],
+          "win_rate_prob_vs_random": 0.9770114942528736,
+          "mean_score_drop_top_k": 0.707346146929947,
+          "ci_score_drop_top_k_95": [
+            0.4978040274450372,
+            1.029258458373549
+          ],
+          "mean_score_drop_random": 0.21837072288847864,
+          "ci_score_drop_random_95": [
+            0.07709436462377092,
+            0.4571890510609691
+          ],
+          "win_rate_score_vs_random": 0.9770114942528736
         },
         "5": {
           "k": 5,
-          "mean_drop_top_k": 0.10216666666666666,
-          "std_drop_top_k": 0.07088351163861892,
-          "mean_drop_random": 0.01010833333333333,
-          "std_drop_random": 0.02705609307448293,
-          "win_rate_vs_random": 0.98,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.11015325670498086,
+          "ci_prob_drop_top_k_95": [
+            0.09540229885057472,
+            0.12538793103448279
+          ],
+          "mean_prob_drop_random": 0.016671455938697313,
+          "ci_prob_drop_random_95": [
+            0.011690134099616856,
+            0.022587523946360145
+          ],
+          "win_rate_prob_vs_random": 0.9655172413793104,
+          "mean_score_drop_top_k": 0.8331253824529771,
+          "ci_score_drop_top_k_95": [
+            0.6128695873262596,
+            1.1765096172930745
+          ],
+          "mean_score_drop_random": 0.3014783462066554,
+          "ci_score_drop_random_95": [
+            0.12399384614590445,
+            0.5861030482417887
+          ],
+          "win_rate_score_vs_random": 0.9655172413793104
         },
         "10": {
           "k": 10,
-          "mean_drop_top_k": 0.13916666666666666,
-          "std_drop_top_k": 0.09497441175858311,
-          "mean_drop_random": 0.016308333333333327,
-          "std_drop_random": 0.036662330660691494,
-          "win_rate_vs_random": 0.98,
-          "samples_evaluated": 50
+          "n": 87,
+          "mean_prob_drop_top_k": 0.15287356321839077,
+          "ci_prob_drop_top_k_95": [
+            0.13160680076628356,
+            0.17510296934865893
+          ],
+          "mean_prob_drop_random": 0.02867337164750957,
+          "ci_prob_drop_random_95": [
+            0.01948383620689656,
+            0.03914008620689653
+          ],
+          "win_rate_prob_vs_random": 0.9885057471264368,
+          "mean_score_drop_top_k": 1.0404755839794553,
+          "ci_score_drop_top_k_95": [
+            0.7910202642869292,
+            1.3965547458392256
+          ],
+          "mean_score_drop_random": 0.40902370254681353,
+          "ci_score_drop_random_95": [
+            0.20425292556631663,
+            0.7229092564881963
+          ],
+          "win_rate_score_vs_random": 1.0
         }
       }
     }
   },
   "method_agreement": {
     "logistic_regression_exact_vs_lime": {
-      "evaluated_emails": 30,
+      "n_evaluated": 30,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
       "mean_spearman_rho": 0.8639915012747829,
-      "std_spearman_rho": 0.10085547599068453,
-      "mean_top_5_jaccard": 0.27791005291005283,
-      "mean_top_10_jaccard": 0.22136370967640318
+      "ci_spearman_rho_95": [
+        0.8266998242770301,
+        0.8983969075729911
+      ],
+      "mean_top_5_jaccard": 0.2937830687830687,
+      "ci_top_5_jaccard_95": [
+        0.22116402116402115,
+        0.3699801587301587
+      ],
+      "mean_top_10_jaccard": 0.23612845273061994,
+      "ci_top_10_jaccard_95": [
+        0.17302264782431193,
+        0.3004360736084807
+      ]
     },
     "linear_svm_exact_vs_lime": {
-      "evaluated_emails": 30,
+      "n_evaluated": 30,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
       "mean_spearman_rho": 0.8184766858528469,
-      "std_spearman_rho": 0.11607227407933728,
-      "mean_top_5_jaccard": 0.27089947089947086,
-      "mean_top_10_jaccard": 0.23414730264575462
+      "ci_spearman_rho_95": [
+        0.7773081073338427,
+        0.8593482854864433
+      ],
+      "mean_top_5_jaccard": 0.30198412698412697,
+      "ci_top_5_jaccard_95": [
+        0.23001653439153438,
+        0.380568783068783
+      ],
+      "mean_top_10_jaccard": 0.27497823097668295,
+      "ci_top_10_jaccard_95": [
+        0.19613876631194746,
+        0.36676510799285555
+      ]
     },
     "naive_bayes_exact_vs_lime": {
-      "evaluated_emails": 20,
+      "n_evaluated": 20,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
       "mean_spearman_rho": 0.42605894105894115,
-      "std_spearman_rho": 0.3963575356014973,
-      "mean_top_5_jaccard": 0.10892857142857142,
-      "mean_top_10_jaccard": 0.12072583419332647
+      "ci_spearman_rho_95": [
+        0.2511144064269065,
+        0.5827734973359971
+      ],
+      "mean_top_5_jaccard": 0.13035714285714284,
+      "ci_top_5_jaccard_95": [
+        0.07837301587301587,
+        0.19129960317460315
+      ],
+      "mean_top_10_jaccard": 0.15128783969728246,
+      "ci_top_10_jaccard_95": [
+        0.09641425868593054,
+        0.22161028336773303
+      ]
+    },
+    "complement_nb_exact_vs_lime": {
+      "n_evaluated": 24,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
+      "mean_spearman_rho": 0.48772130647130646,
+      "ci_spearman_rho_95": [
+        0.30605519480519483,
+        0.6251303037240538
+      ],
+      "mean_top_5_jaccard": 0.10400132275132275,
+      "ci_top_5_jaccard_95": [
+        0.052083333333333336,
+        0.1592592592592592
+      ],
+      "mean_top_10_jaccard": 0.13335805813553492,
+      "ci_top_10_jaccard_95": [
+        0.07746441778465771,
+        0.1918185539932347
+      ]
+    },
+    "random_forest_lime_vs_logistic_regression_exact": {
+      "n_evaluated": 28,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
+      "mean_spearman_rho": 0.45650156179512663,
+      "ci_spearman_rho_95": [
+        0.29275926548849207,
+        0.5954144888540621
+      ],
+      "mean_top_5_jaccard": 0.09410430839002268,
+      "ci_top_5_jaccard_95": [
+        0.048008786848072596,
+        0.1473922902494331
+      ],
+      "mean_top_10_jaccard": 0.12416682259948512,
+      "ci_top_10_jaccard_95": [
+        0.07522144822841419,
+        0.1868723320131021
+      ]
+    },
+    "random_forest_lime_vs_linear_svm_exact": {
+      "n_evaluated": 28,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
+      "mean_spearman_rho": 0.5021088219976987,
+      "ci_spearman_rho_95": [
+        0.37929499192021304,
+        0.6183576516731094
+      ],
+      "mean_top_5_jaccard": 0.09268707482993198,
+      "ci_top_5_jaccard_95": [
+        0.05059523809523809,
+        0.13719175170068026
+      ],
+      "mean_top_10_jaccard": 0.12075817168972855,
+      "ci_top_10_jaccard_95": [
+        0.07408771622684161,
+        0.17545995920297944
+      ]
+    },
+    "random_forest_lime_vs_complement_nb_exact": {
+      "n_evaluated": 26,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
+      "mean_spearman_rho": -0.038273434710086277,
+      "ci_spearman_rho_95": [
+        -0.20968950497089636,
+        0.1324088058434778
+      ],
+      "mean_top_5_jaccard": 0.06410256410256411,
+      "ci_top_5_jaccard_95": [
+        0.030982905982905984,
+        0.1014957264957265
+      ],
+      "mean_top_10_jaccard": 0.10722625757455478,
+      "ci_top_10_jaccard_95": [
+        0.061328507448863485,
+        0.16343900498796005
+      ]
+    },
+    "logistic_regression_exact_vs_linear_svm_exact": {
+      "n_evaluated": 30,
+      "token_universe": "active unigrams present in the document evaluated by both methods",
+      "mean_spearman_rho": 0.9067664919402553,
+      "ci_spearman_rho_95": [
+        0.8926014690049611,
+        0.9196472191726744
+      ],
+      "mean_top_5_jaccard": 0.6198412698412699,
+      "ci_top_5_jaccard_95": [
+        0.5301488095238095,
+        0.7063690476190475
+      ],
+      "mean_top_10_jaccard": 0.5315927536515772,
+      "ci_top_10_jaccard_95": [
+        0.4584268509268509,
+        0.6097735475309004
+      ]
     }
-  },
-  "experimental_notes": "Deletion test uses correctly classified test spam emails only, deleting top-k tokens from actual raw text. Random baseline uses 20 repeats per email from active vocabulary tokens. For linear models, the deletion test is partly circular because weights are exact closed-form coefficients; hence the most informative comparisons are LIME vs exact and Random Forest vs linear models."
+  }
 }

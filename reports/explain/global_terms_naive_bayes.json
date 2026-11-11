@@ -1,7 +1,8 @@
 {
   "model": "Multinomial Naive Bayes",
   "model_tag": "naive_bayes",
-  "method": "log_likelihood_ratio",
+  "method": "Log-likelihood ratio weight w_j = log P(w_j | spam) - log P(w_j | ham).",
+  "formula": "w_j = feature_log_prob_[1, j] - feature_log_prob_[0, j]",
   "top_k": 25,
   "top_spam_terms": [
     {

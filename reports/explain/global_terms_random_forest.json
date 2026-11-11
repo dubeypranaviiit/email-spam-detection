@@ -1,7 +1,8 @@
 {
   "model": "Random Forest",
   "model_tag": "random_forest",
-  "method": "mean_decrease_in_impurity_signed_by_class_frequency",
+  "method": "Random Forest MDI (Gini importance) signed by empirical training class mean difference: Delta mu_j = mean(TF-IDF_j | spam) - mean(TF-IDF_j | ham). Terms with Delta mu_j > 0 are spam-indicating (+MDI); terms with Delta mu_j < 0 are ham-indicating (-MDI).",
+  "formula": "signed_weight_j = MDI_j * sign(mean(X_{spam, j}) - mean(X_{ham, j}))",
   "top_k": 25,
   "top_spam_terms": [
     {

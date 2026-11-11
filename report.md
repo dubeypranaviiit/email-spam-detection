@@ -79,6 +79,21 @@ The hypothesis is **partly supported**: HTML fallback raised Naive Bayes recall 
 
 The near-duplicate screen found 1,436 candidate pairs at the chosen threshold. No near-duplicate pair crossed the holdout (guaranteed by the grouped split, not an independent finding). Connected groups were also supplied to all CV folds. This heuristic may miss semantically related messages or group boilerplate, so independent time-based/current-corpus validation remains necessary.
 
+### Dataset artifacts and source-specific shortcuts
+
+Global term analysis and error inspection reveal clear dataset artifacts that limit real-world generalization:
+- **Corpus source and era bias**: High-ranking ham terms across models include `rpm`, `wrote`, `users`, `spambayes`, `razor`, `freshrpms`, and `2002`. These terms reflect the specific technical mailing lists (such as Linux Red Hat packaging and SpamAssassin/Razor developer discussions) from which the 2002-era SpamAssassin ham corpus was collected. Similarly, top spam terms such as `insuranceiq` and `insuranceiq com` correspond to specific bulk commercial campaigns active during that collection period.
+- **Shortcut learning**: Classifiers partially leverage these source-specific tokens as shortcuts to classify ham. While effective on this historical benchmark, these features do not transfer to modern inboxes. This finding highlights the necessity of evaluating explainability: global feature attributions expose dataset leakage and historical era-coupling that accuracy alone hides.
+- **Statistical caveat on error analysis**: Because holdout accuracy is high (Complement NB produced only 3 false negatives and 0 false positives; Linear SVM produced 4 false negatives; Logistic Regression produced 10 false negatives and 1 false positive), token patterns extracted from individual errors are anecdotal and illustrative rather than statistically robust distributions.
+
+### Explainability and faithfulness evaluation
+
+Local explanations decompose predictions into exact token contributions:
+- **Linear models (Logistic Regression, Linear SVM)**: Exact logit contribution $w_j \cdot x_j$. The deletion test for linear models is partly circular because the weights are exact closed-form coefficients of the decision boundary; the informative comparisons are therefore LIME vs exact and Random Forest vs the linear models.
+- **Naive Bayes (Multinomial and Complement NB)**: Exact log-odds contribution $w_j \cdot x_j$. Naive Bayes is strictly additive in log-space. The observed divergence between exact NB log-odds and LIME is hypothesized to stem from (1) severe probability saturation in NB (where predictions cluster near 0 or 1, making local linear probability surrogates noisy), and (2) objective discrepancy (LIME fits probability shifts under $L_2$ regularization, while exact attribution evaluates log-odds).
+- **Deletion fidelity**: Evaluated on mutual correctly classified test spam emails ($n=87$). Deleting top-$k$ tokens ($k \in \{1, 3, 5, 10\}$) produces substantially larger drops in predicted spam probability and decision score/log-odds than deleting $k$ random active tokens across 20 bootstrap repeats.
+
+
 ## 5. Application
 
 `app.py` loads the tuned Logistic Regression pipeline saved with joblib and accepts a subject and body. It rejects blank input, handles missing or unreadable models, and displays a class label only. No calibrated probability is shown; a prediction is not a guarantee of email safety.

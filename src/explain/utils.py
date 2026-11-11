@@ -98,16 +98,42 @@ def load_holdout_split() -> Tuple[pd.DataFrame, list[int], list[int]]:
     return df, train_indices.tolist(), test_indices.tolist()
 
 
-def get_prediction_and_prob(pipeline: Any, text: str) -> Tuple[int, float]:
-    """Return label (0 or 1) and spam probability for any of the 5 models."""
+def get_prediction_score_and_prob(pipeline: Any, text: str) -> Tuple[int, float, float]:
+    """Return label (0 or 1), decision score / log-odds (float), and spam probability (float)."""
     clf = pipeline.named_steps["classifier"]
-    if hasattr(pipeline, "predict_proba"):
-        probs = pipeline.predict_proba([text])[0]
-        prob_spam = float(probs[1])
-        label = int(prob_spam >= 0.5)
+    tfidf = pipeline.named_steps["tfidf"]
+
+    if hasattr(clf, "decision_function"):
+        # Logistic Regression or Linear SVM
+        score = float(pipeline.decision_function([text])[0])
+        prob = float(1.0 / (1.0 + np.exp(-score)))
+        label = int(score > 0)
+    elif hasattr(clf, "feature_log_prob_"):
+        # Multinomial NB or Complement NB
+        X = tfidf.transform([text])
+        if hasattr(clf, "class_log_prior_") and len(clf.class_log_prior_) == 2 and not getattr(clf, "norm", False):
+            # Multinomial NB
+            w = clf.feature_log_prob_[1] - clf.feature_log_prob_[0]
+            b = float(clf.class_log_prior_[1] - clf.class_log_prior_[0])
+            score = float(b + X.dot(w)[0])
+        else:
+            # Complement NB
+            w = clf.feature_log_prob_[1] - clf.feature_log_prob_[0]
+            score = float(X.dot(w)[0])
+        prob = float(1.0 / (1.0 + np.exp(-score)))
+        label = int(prob >= 0.5)
     else:
-        # LinearSVC decision function
-        dfunc = float(pipeline.decision_function([text])[0])
-        prob_spam = float(1.0 / (1.0 + np.exp(-dfunc)))
-        label = int(dfunc > 0)
-    return label, prob_spam
+        # Random Forest
+        prob = float(pipeline.predict_proba([text])[0, 1])
+        # Safe log-odds
+        p_clipped = min(max(prob, 1e-6), 1.0 - 1e-6)
+        score = float(np.log(p_clipped / (1.0 - p_clipped)))
+        label = int(prob >= 0.5)
+
+    return label, score, prob
+
+
+def get_prediction_and_prob(pipeline: Any, text: str) -> Tuple[int, float]:
+    """Backward-compatible helper returning label and spam probability."""
+    label, _, prob = get_prediction_score_and_prob(pipeline, text)
+    return label, prob

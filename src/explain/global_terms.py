@@ -1,4 +1,21 @@
-"""Global feature attribution: Top 25 spam- and ham-indicating terms per model."""
+"""Global feature attribution: Top 25 spam- and ham-indicating terms per model.
+
+For Linear Models (Logistic Regression, Linear SVM):
+  Terms are ranked by fitted model coefficients w_j in the decision boundary.
+  Positive weights push toward Spam; negative weights push toward Ham.
+
+For Naive Bayes (Multinomial NB, Complement NB):
+  Terms are ranked by log-likelihood ratio weights:
+  w_j = feature_log_prob_[1, j] - feature_log_prob_[0, j].
+  Positive weights push toward Spam; negative weights push toward Ham.
+
+For Random Forest:
+  Standard tree Mean Decrease in Impurity (MDI / Gini importance) is unsigned and non-negative (I_j >= 0).
+  To provide signed polarities, each feature's importance is signed using the empirical difference
+  in class means on the training set:
+    Delta mu_j = E[X_j | Spam] - E[X_j | Ham] = (1 / N_spam) sum_{i in Spam} X_{i, j} - (1 / N_ham) sum_{i in Ham} X_{i, j}
+  A feature is designated as spam-indicating if Delta mu_j > 0 (signed +I_j) and ham-indicating if Delta mu_j < 0 (signed -I_j).
+"""
 from __future__ import annotations
 
 import json
@@ -26,7 +43,8 @@ def compute_global_terms(model_tag: str, top_k: int = 25) -> Dict[str, Any]:
 
     if tag in ("logistic_regression", "linear_svm"):
         weights = clf.coef_[0]
-        method_desc = "linear_coefficients"
+        method_desc = "Fitted linear coefficients w_j from the decision boundary."
+        formula = "w_j = classifier.coef_[0, j]"
         top_spam_indices = np.argsort(weights)[-top_k:][::-1]
         top_ham_indices = np.argsort(weights)[:top_k]
 
@@ -42,7 +60,8 @@ def compute_global_terms(model_tag: str, top_k: int = 25) -> Dict[str, Any]:
     elif tag in ("naive_bayes", "complement_nb"):
         # Log-odds difference: feature_log_prob_[1] - feature_log_prob_[0]
         weights = clf.feature_log_prob_[1] - clf.feature_log_prob_[0]
-        method_desc = "log_likelihood_ratio"
+        method_desc = "Log-likelihood ratio weight w_j = log P(w_j | spam) - log P(w_j | ham)."
+        formula = "w_j = feature_log_prob_[1, j] - feature_log_prob_[0, j]"
         top_spam_indices = np.argsort(weights)[-top_k:][::-1]
         top_ham_indices = np.argsort(weights)[:top_k]
 
@@ -56,9 +75,13 @@ def compute_global_terms(model_tag: str, top_k: int = 25) -> Dict[str, Any]:
         ]
 
     elif tag == "random_forest":
-        # Random Forest MDI importances signed by empirical class mean difference
         importances = clf.feature_importances_
-        method_desc = "mean_decrease_in_impurity_signed_by_class_frequency"
+        method_desc = (
+            "Random Forest MDI (Gini importance) signed by empirical training class mean difference: "
+            "Delta mu_j = mean(TF-IDF_j | spam) - mean(TF-IDF_j | ham). Terms with Delta mu_j > 0 are "
+            "spam-indicating (+MDI); terms with Delta mu_j < 0 are ham-indicating (-MDI)."
+        )
+        formula = "signed_weight_j = MDI_j * sign(mean(X_{spam, j}) - mean(X_{ham, j}))"
 
         df, train_idx, _ = load_holdout_split()
         train_df = df.iloc[train_idx]
@@ -94,6 +117,7 @@ def compute_global_terms(model_tag: str, top_k: int = 25) -> Dict[str, Any]:
         "model": CANONICAL_NAMES[tag],
         "model_tag": tag,
         "method": method_desc,
+        "formula": formula,
         "top_k": top_k,
         "top_spam_terms": top_spam,
         "top_ham_terms": top_ham,

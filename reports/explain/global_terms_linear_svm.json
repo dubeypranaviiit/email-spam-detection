@@ -1,7 +1,8 @@
 {
   "model": "Linear SVM",
   "model_tag": "linear_svm",
-  "method": "linear_coefficients",
+  "method": "Fitted linear coefficients w_j from the decision boundary.",
+  "formula": "w_j = classifier.coef_[0, j]",
   "top_k": 25,
   "top_spam_terms": [
     {
