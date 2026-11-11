@@ -1,15 +1,18 @@
 {
   "experimental_setup": {
-    "evaluation_set": "Mutual correctly classified holdout spam emails across all 5 models",
+    "evaluation_set": "Mutual correctly classified holdout spam emails across all 5 models (n=87), noting easy-case benchmark bias",
     "n_emails_per_model": 87,
     "random_baseline_repeats": 20,
     "bootstrap_ci_level": 0.95,
     "bootstrap_iterations": 1000,
+    "agreement_sample_size_rationale": "Sample size n=20-30 used due to LIME simulation and perturbation computation cost",
     "token_universe_agreement": "active unigrams present in the email recognized by both methods"
   },
   "methodological_hypotheses": {
-    "linear_models_circularity": "For linear models (Logistic Regression, Linear SVM), deletion test is partly circular because exact token weights w_j * x_j are closed-form components of the logit. The most informative evaluations are therefore LIME vs exact and Random Forest vs the linear models.",
-    "naive_bayes_lime_divergence": "Naive Bayes is strictly additive in log-space (log-odds = b + sum x_j w_j). The lower rank correlation observed between exact NB log-odds and LIME is hypothesized to stem from two factors: (1) severe probability saturation/overconfidence in Naive Bayes (predict_proba outputs often cluster within 1e-6 of 0 or 1), creating a nearly flat or step-like probability surface during LIME random token masking; and (2) objective discrepancy: LIME fits an L2-regularized linear surrogate predicting probability shifts, whereas exact attribution decomposes log-odds."
+    "linear_models_circularity": "Hypothesis / property: For linear models (Logistic Regression, Linear SVM), the deletion test is partly circular because exact token weights w_j * x_j are closed-form components of the logit. The most informative evaluations are therefore LIME vs exact and Random Forest vs the linear models.",
+    "naive_bayes_lime_divergence": "Hypothesis: Naive Bayes is strictly additive in log-space (log-odds = b + sum x_j w_j). The lower rank correlation observed between exact NB log-odds and LIME is hypothesized to stem from two factors: (1) severe probability saturation in Naive Bayes where posterior probabilities cluster within 1e-6 of 0 or 1, producing a step-like probability surface under random token masking; and (2) objective discrepancy: LIME fits an L2-regularized linear surrogate predicting probability shifts, whereas exact attribution decomposes log-odds.",
+    "tfidf_l2_rescaling_after_deletion": "Hypothesis: Deleting tokens from raw text induces TF-IDF L2-normalization rescaling: when a token is removed, the document vector norm decreases, mathematically boosting the normalized weights of all remaining terms by 1 / sqrt(1 - x_deleted^2). In emails with dozens of strong spam features, this rescaling can partially offset the drop from removing a single token at k=1.",
+    "cross_model_tree_discrepancy": "Hypothesis: Random Forest relies on axis-aligned feature splits and decision paths that can capture nonlinear feature interactions. When explained via LIME, its feature attributions moderately correlate with linear models (rho ~ 0.46-0.50) but diverge from Complement NB (rho ~ -0.04)."
   },
   "deletion_tests": {
     "logistic_regression": {
@@ -26,10 +29,10 @@
             0.02219797358454281,
             0.03580833056061448
           ],
-          "mean_prob_drop_random": 0.002002449489888387,
+          "mean_prob_drop_random": 0.0028242388137744044,
           "ci_prob_drop_random_95": [
-            0.001296410322851276,
-            0.0028729531435883644
+            0.0018406359747232166,
+            0.004067431732355376
           ],
           "win_rate_prob_vs_random": 1.0,
           "mean_score_drop_top_k": 0.47057977475724516,
@@ -37,88 +40,88 @@
             0.4239548569488864,
             0.5221976066080872
           ],
-          "mean_score_drop_random": 0.03935464624476727,
+          "mean_score_drop_random": 0.060409067991585394,
           "ci_score_drop_random_95": [
-            0.028984959345702284,
-            0.05095675408820989
+            0.04408266342439634,
+            0.07935357844927868
           ],
           "win_rate_score_vs_random": 1.0
         },
         "3": {
           "k": 3,
           "n": 87,
-          "mean_prob_drop_top_k": 0.0782413086451614,
+          "mean_prob_drop_top_k": 0.07878630734527267,
           "ci_prob_drop_top_k_95": [
-            0.06376789151687255,
-            0.09439362145881663
+            0.064129563834425,
+            0.09474370220710682
           ],
-          "mean_prob_drop_random": 0.0061934157563028475,
+          "mean_prob_drop_random": 0.008564938768319874,
           "ci_prob_drop_random_95": [
-            0.003869182462437014,
-            0.009405810552781608
+            0.005605136313523951,
+            0.012502016416667094
           ],
           "win_rate_prob_vs_random": 1.0,
-          "mean_score_drop_top_k": 1.0646118426463271,
+          "mean_score_drop_top_k": 1.0702429827508306,
           "ci_score_drop_top_k_95": [
-            0.9889195353571022,
-            1.1487480857177597
+            0.991493573381117,
+            1.1589155781629574
           ],
-          "mean_score_drop_random": 0.1198377558726764,
+          "mean_score_drop_random": 0.1756390271380455,
           "ci_score_drop_random_95": [
-            0.08942522131598561,
-            0.1546615583985221
+            0.13762023087956776,
+            0.21792906169673013
           ],
           "win_rate_score_vs_random": 1.0
         },
         "5": {
           "k": 5,
           "n": 87,
-          "mean_prob_drop_top_k": 0.1284020405365165,
+          "mean_prob_drop_top_k": 0.1306197405601477,
           "ci_prob_drop_top_k_95": [
-            0.10612896630202492,
-            0.1521095954887766
+            0.10805759910098302,
+            0.15483705564814826
           ],
-          "mean_prob_drop_random": 0.013906727654644008,
+          "mean_prob_drop_random": 0.019226093279901088,
           "ci_prob_drop_random_95": [
-            0.008254448758577016,
-            0.022597731635776625
+            0.012274213682512025,
+            0.029163886466780153
           ],
           "win_rate_prob_vs_random": 0.9885057471264368,
-          "mean_score_drop_top_k": 1.5008512954776219,
+          "mean_score_drop_top_k": 1.5225782303977562,
           "ci_score_drop_top_k_95": [
-            1.408627313885863,
-            1.6037715560798405
+            1.4261870567006536,
+            1.6298716497790726
           ],
-          "mean_score_drop_random": 0.20777860669709475,
+          "mean_score_drop_random": 0.30785650169915374,
           "ci_score_drop_random_95": [
-            0.16042724090628804,
-            0.2659179822752193
+            0.2414977550593966,
+            0.3812962827591509
           ],
           "win_rate_score_vs_random": 0.9885057471264368
         },
         "10": {
           "k": 10,
           "n": 87,
-          "mean_prob_drop_top_k": 0.22661702709911183,
+          "mean_prob_drop_top_k": 0.23273367290654312,
           "ci_prob_drop_top_k_95": [
-            0.19198397886808044,
-            0.26306262877544057
+            0.19818560576876204,
+            0.2695045333128626
           ],
-          "mean_prob_drop_random": 0.029332803781180604,
+          "mean_prob_drop_random": 0.04117887432124225,
           "ci_prob_drop_random_95": [
-            0.01780471878974954,
-            0.04683100570789205
+            0.02686078869037186,
+            0.06213732167841003
           ],
           "win_rate_prob_vs_random": 0.9885057471264368,
-          "mean_score_drop_top_k": 2.2012782051067177,
+          "mean_score_drop_top_k": 2.24030193607068,
           "ci_score_drop_top_k_95": [
-            2.0933024344372653,
-            2.3237119552258845
+            2.129060915729402,
+            2.364140483991352
           ],
-          "mean_score_drop_random": 0.40848758242776173,
+          "mean_score_drop_random": 0.5864482652824469,
           "ci_score_drop_random_95": [
-            0.32634244038018845,
-            0.5136805453380049
+            0.47086294709558163,
+            0.7189626927031038
           ],
           "win_rate_score_vs_random": 0.9885057471264368
         }
@@ -138,10 +141,10 @@
             0.022710517494976594,
             0.028583571260247808
           ],
-          "mean_prob_drop_random": 0.0018221572652000302,
+          "mean_prob_drop_random": 0.002654272558335433,
           "ci_prob_drop_random_95": [
-            0.001305143354103185,
-            0.00243882050190667
+            0.0019416688401659179,
+            0.0034209143151126636
           ],
           "win_rate_prob_vs_random": 1.0,
           "mean_score_drop_top_k": 0.12193577522359351,
@@ -149,88 +152,88 @@
             0.10895768385055933,
             0.13591068350967367
           ],
-          "mean_score_drop_random": 0.009053601381269353,
+          "mean_score_drop_random": 0.013281433052996549,
           "ci_score_drop_random_95": [
-            0.006398608171538403,
-            0.01234259247537613
+            0.009584053871809864,
+            0.01734644952498747
           ],
           "win_rate_score_vs_random": 1.0
         },
         "3": {
           "k": 3,
           "n": 87,
-          "mean_prob_drop_top_k": 0.0567848501985094,
+          "mean_prob_drop_top_k": 0.057718249975483714,
           "ci_prob_drop_top_k_95": [
-            0.05243466597921121,
-            0.061366571527214905
+            0.05350562882539945,
+            0.06245119294706966
           ],
-          "mean_prob_drop_random": 0.004974740673877927,
+          "mean_prob_drop_random": 0.00742395732466992,
           "ci_prob_drop_random_95": [
-            0.003569895336850795,
-            0.006635812856857453
+            0.005540926816182451,
+            0.009486380076771569
           ],
           "win_rate_prob_vs_random": 1.0,
-          "mean_score_drop_top_k": 0.264597563134835,
+          "mean_score_drop_top_k": 0.26892219188969996,
           "ci_score_drop_top_k_95": [
-            0.2450702995450479,
-            0.28444783277487096
+            0.24976631410676417,
+            0.2896218148184971
           ],
-          "mean_score_drop_random": 0.024537513196381186,
+          "mean_score_drop_random": 0.03686328238044784,
           "ci_score_drop_random_95": [
-            0.017393906793897025,
-            0.03284252146012207
+            0.027129133494813797,
+            0.04779775357664456
           ],
           "win_rate_score_vs_random": 1.0
         },
         "5": {
           "k": 5,
           "n": 87,
-          "mean_prob_drop_top_k": 0.08355623489622821,
+          "mean_prob_drop_top_k": 0.08439137237150311,
           "ci_prob_drop_top_k_95": [
-            0.07803070123643799,
-            0.08901264670748164
+            0.0787666187678219,
+            0.08997170741015419
           ],
-          "mean_prob_drop_random": 0.009322514363390077,
+          "mean_prob_drop_random": 0.013351654730026653,
           "ci_prob_drop_random_95": [
-            0.00696994031598048,
-            0.012435011609577136
+            0.010115410588056777,
+            0.017076505291954213
           ],
           "win_rate_prob_vs_random": 1.0,
-          "mean_score_drop_top_k": 0.38231848671503516,
+          "mean_score_drop_top_k": 0.38596185071569106,
           "ci_score_drop_top_k_95": [
-            0.3592171839932998,
-            0.4068394093329263
+            0.36170404789539745,
+            0.41076760006777757
           ],
-          "mean_score_drop_random": 0.04501535514991868,
+          "mean_score_drop_random": 0.06456952766963647,
           "ci_score_drop_random_95": [
-            0.03380021041679255,
-            0.05971469029183026
+            0.04913527966179397,
+            0.08218198883326545
           ],
           "win_rate_score_vs_random": 1.0
         },
         "10": {
           "k": 10,
           "n": 87,
-          "mean_prob_drop_top_k": 0.13337055174283052,
+          "mean_prob_drop_top_k": 0.1337656874017299,
           "ci_prob_drop_top_k_95": [
-            0.1260788251884125,
-            0.1404561458411096
+            0.12620188739106764,
+            0.14086715162368102
           ],
-          "mean_prob_drop_random": 0.017015718602626125,
+          "mean_prob_drop_random": 0.02390967137665818,
           "ci_prob_drop_random_95": [
-            0.012685032876037207,
-            0.02243697565853726
+            0.01850969770230663,
+            0.030208635661700727
           ],
           "win_rate_prob_vs_random": 0.9885057471264368,
-          "mean_score_drop_top_k": 0.5936967426323682,
+          "mean_score_drop_top_k": 0.595199555216894,
           "ci_score_drop_top_k_95": [
-            0.5638264485073922,
-            0.6255810716724188
+            0.5639048721596615,
+            0.6269706105281132
           ],
-          "mean_score_drop_random": 0.08105765514228282,
+          "mean_score_drop_random": 0.11396176051043179,
           "ci_score_drop_random_95": [
-            0.06167538884704122,
-            0.10570806818904294
+            0.08879737453968894,
+            0.14384561995025616
           ],
           "win_rate_score_vs_random": 0.9885057471264368
         }
@@ -245,106 +248,106 @@
         "1": {
           "k": 1,
           "n": 87,
-          "mean_prob_drop_top_k": 0.008369413011667211,
+          "mean_prob_drop_top_k": 0.002752052368684298,
           "ci_prob_drop_top_k_95": [
-            0.002293120515974807,
-            0.015970109465643482
+            0.0007714227996192557,
+            0.0050945871522749195
           ],
-          "mean_prob_drop_random": 0.0009180232196775453,
+          "mean_prob_drop_random": 0.0002665651305157612,
           "ci_prob_drop_random_95": [
-            0.00025986246202946024,
-            0.001733435800609513
+            7.502097706033449e-05,
+            0.0005300501582221795
           ],
-          "win_rate_prob_vs_random": 0.5057471264367817,
-          "mean_score_drop_top_k": 0.6571099640761172,
+          "win_rate_prob_vs_random": 0.7586206896551724,
+          "mean_score_drop_top_k": 1.2876097769052721,
           "ci_score_drop_top_k_95": [
-            0.4931970725525614,
-            0.8362687049133904
+            1.1404983829465707,
+            1.4462633783600052
           ],
-          "mean_score_drop_random": 0.26415711054567553,
+          "mean_score_drop_random": 0.4389071064351511,
           "ci_score_drop_random_95": [
-            0.21905843164257555,
-            0.31812393350365487
+            0.36029852084568154,
+            0.5348671682052892
           ],
-          "win_rate_score_vs_random": 0.5517241379310345
+          "win_rate_score_vs_random": 0.9655172413793104
         },
         "3": {
           "k": 3,
           "n": 87,
-          "mean_prob_drop_top_k": 0.03484111810893381,
+          "mean_prob_drop_top_k": 0.021938847232994416,
           "ci_prob_drop_top_k_95": [
-            0.011441503423157733,
-            0.062427605350199505
+            0.00745096479029885,
+            0.03815679647937603
           ],
-          "mean_prob_drop_random": 0.0037582204278099685,
+          "mean_prob_drop_random": 0.0013368859752102206,
           "ci_prob_drop_random_95": [
-            0.0011829106776475211,
-            0.006705956361571471
+            0.0004238082388997573,
+            0.0023884947960353736
           ],
-          "win_rate_prob_vs_random": 0.6896551724137931,
-          "mean_score_drop_top_k": 1.767242498499848,
+          "win_rate_prob_vs_random": 0.735632183908046,
+          "mean_score_drop_top_k": 2.8873224605150094,
           "ci_score_drop_top_k_95": [
-            1.5343883075561449,
-            1.9824112572138957
+            2.6084792501478606,
+            3.1636236334874117
           ],
-          "mean_score_drop_random": 0.8082971248390929,
+          "mean_score_drop_random": 1.2804248364971684,
           "ci_score_drop_random_95": [
-            0.6862535670704968,
-            0.9564102541783579
+            1.07578585748852,
+            1.5378702965984665
           ],
-          "win_rate_score_vs_random": 0.8390804597701149
+          "win_rate_score_vs_random": 0.9425287356321839
         },
         "5": {
           "k": 5,
           "n": 87,
-          "mean_prob_drop_top_k": 0.05520031705212275,
+          "mean_prob_drop_top_k": 0.04757836407604004,
           "ci_prob_drop_top_k_95": [
-            0.020633721740140522,
-            0.09170243279637356
+            0.0189202932311792,
+            0.07815307503069505
           ],
-          "mean_prob_drop_random": 0.008123493832287242,
+          "mean_prob_drop_random": 0.003158534017748242,
           "ci_prob_drop_random_95": [
-            0.0028112658337253113,
-            0.014333113180421209
+            0.0011596383587076159,
+            0.005498911839945229
           ],
-          "win_rate_prob_vs_random": 0.7011494252873564,
-          "mean_score_drop_top_k": 2.8247635031918983,
+          "win_rate_prob_vs_random": 0.735632183908046,
+          "mean_score_drop_top_k": 4.46327955842721,
           "ci_score_drop_top_k_95": [
-            2.474437703685764,
-            3.1634738722983697
+            4.110514740864117,
+            4.832512124004413
           ],
-          "mean_score_drop_random": 1.4108815354279012,
+          "mean_score_drop_random": 2.1755007011623655,
           "ci_score_drop_random_95": [
-            1.2038662485412857,
-            1.65515441121807
+            1.8260315027074316,
+            2.5788784134053073
           ],
-          "win_rate_score_vs_random": 0.8045977011494253
+          "win_rate_score_vs_random": 0.9655172413793104
         },
         "10": {
           "k": 10,
           "n": 87,
-          "mean_prob_drop_top_k": 0.09196266226543529,
+          "mean_prob_drop_top_k": 0.09322467053175253,
           "ci_prob_drop_top_k_95": [
-            0.04715258403536121,
-            0.13870740183629718
+            0.04984408975490571,
+            0.1375957584950695
           ],
-          "mean_prob_drop_random": 0.022289301657257253,
+          "mean_prob_drop_random": 0.014501934921546864,
           "ci_prob_drop_random_95": [
-            0.006328195094244672,
-            0.0442376084607001
+            0.0038405786033510795,
+            0.029433714030724915
           ],
-          "win_rate_prob_vs_random": 0.7011494252873564,
-          "mean_score_drop_top_k": 4.868588092073538,
+          "win_rate_prob_vs_random": 0.8045977011494253,
+          "mean_score_drop_top_k": 7.552567096013474,
           "ci_score_drop_top_k_95": [
-            4.42178289256496,
-            5.340866352075838
+            7.020526508553136,
+            8.159136662006707
           ],
-          "mean_score_drop_random": 2.66690855602441,
+          "mean_score_drop_random": 4.065861306738684,
           "ci_score_drop_random_95": [
-            2.287804418057411,
-            3.1153498274388576
+            3.4311250947749947,
+            4.822982541384314
           ],
-          "win_rate_score_vs_random": 0.8275862068965517
+          "win_rate_score_vs_random": 0.9540229885057471
         }
       }
     },
@@ -357,106 +360,106 @@
         "1": {
           "k": 1,
           "n": 87,
-          "mean_prob_drop_top_k": 0.008369413011667187,
+          "mean_prob_drop_top_k": 0.009920142411276292,
           "ci_prob_drop_top_k_95": [
-            0.0022931205159748003,
-            0.015970109465643437
+            0.0034313715939129426,
+            0.017463542593689246
           ],
-          "mean_prob_drop_random": 0.0009180232196775459,
+          "mean_prob_drop_random": 0.000988077568377209,
           "ci_prob_drop_random_95": [
-            0.0002598624620294662,
-            0.0017334358006095092
+            0.0003150999760714025,
+            0.0018190606156599947
           ],
-          "win_rate_prob_vs_random": 0.5057471264367817,
-          "mean_score_drop_top_k": 0.6571099640761169,
+          "win_rate_prob_vs_random": 0.7586206896551724,
+          "mean_score_drop_top_k": 1.2876097769052708,
           "ci_score_drop_top_k_95": [
-            0.4931970725525611,
-            0.8362687049133901
+            1.1404983829465696,
+            1.446263378360003
           ],
-          "mean_score_drop_random": 0.26415711054567487,
+          "mean_score_drop_random": 0.4389071064351502,
           "ci_score_drop_random_95": [
-            0.21905843164257446,
-            0.31812393350365403
+            0.3602985208456803,
+            0.5348671682052886
           ],
-          "win_rate_score_vs_random": 0.5517241379310345
+          "win_rate_score_vs_random": 0.9655172413793104
         },
         "3": {
           "k": 3,
           "n": 87,
-          "mean_prob_drop_top_k": 0.03484111810893377,
+          "mean_prob_drop_top_k": 0.047341253789032756,
           "ci_prob_drop_top_k_95": [
-            0.0114415034231577,
-            0.06242760535019947
+            0.01825938617045118,
+            0.0766142341816694
           ],
-          "mean_prob_drop_random": 0.003758220427809963,
+          "mean_prob_drop_random": 0.004743117327726463,
           "ci_prob_drop_random_95": [
-            0.0011829106776475146,
-            0.0067059563615714645
+            0.0016868730331713584,
+            0.007973099580668152
           ],
-          "win_rate_prob_vs_random": 0.6896551724137931,
-          "mean_score_drop_top_k": 1.7672424984998454,
+          "win_rate_prob_vs_random": 0.7471264367816092,
+          "mean_score_drop_top_k": 2.8873224605150067,
           "ci_score_drop_top_k_95": [
-            1.5343883075561426,
-            1.9824112572138943
+            2.608479250147857,
+            3.1636236334874064
           ],
-          "mean_score_drop_random": 0.8082971248390926,
+          "mean_score_drop_random": 1.2804248364971678,
           "ci_score_drop_random_95": [
-            0.686253567070497,
-            0.9564102541783568
+            1.0757858574885202,
+            1.5378702965984659
           ],
-          "win_rate_score_vs_random": 0.8390804597701149
+          "win_rate_score_vs_random": 0.9425287356321839
         },
         "5": {
           "k": 5,
           "n": 87,
-          "mean_prob_drop_top_k": 0.05520031705212271,
+          "mean_prob_drop_top_k": 0.08214311004172234,
           "ci_prob_drop_top_k_95": [
-            0.02063372174014048,
-            0.0917024327963735
+            0.04074138708872621,
+            0.12457363802904362
           ],
-          "mean_prob_drop_random": 0.008123493832287235,
+          "mean_prob_drop_random": 0.010489605895543897,
           "ci_prob_drop_random_95": [
-            0.0028112658337253035,
-            0.014333113180421193
+            0.004015141721617115,
+            0.0181505566239625
           ],
-          "win_rate_prob_vs_random": 0.7011494252873564,
-          "mean_score_drop_top_k": 2.8247635031918956,
+          "win_rate_prob_vs_random": 0.7586206896551724,
+          "mean_score_drop_top_k": 4.463279558427208,
           "ci_score_drop_top_k_95": [
-            2.474437703685762,
-            3.1634738722983684
+            4.110514740864114,
+            4.832512124004413
           ],
-          "mean_score_drop_random": 1.4108815354279005,
+          "mean_score_drop_random": 2.175500701162364,
           "ci_score_drop_random_95": [
-            1.203866248541285,
-            1.6551544112180685
+            1.8260315027074305,
+            2.5788784134053073
           ],
-          "win_rate_score_vs_random": 0.8045977011494253
+          "win_rate_score_vs_random": 0.9655172413793104
         },
         "10": {
           "k": 10,
           "n": 87,
-          "mean_prob_drop_top_k": 0.09196266226543517,
+          "mean_prob_drop_top_k": 0.16113842622819935,
           "ci_prob_drop_top_k_95": [
-            0.04715258403536114,
-            0.13870740183629704
+            0.1010317909022644,
+            0.21538878575723802
           ],
-          "mean_prob_drop_random": 0.02228930165725724,
+          "mean_prob_drop_random": 0.032233179859292235,
           "ci_prob_drop_random_95": [
-            0.006328195094244667,
-            0.04423760846070009
+            0.011064643281142487,
+            0.060750808202796845
           ],
-          "win_rate_prob_vs_random": 0.7011494252873564,
-          "mean_score_drop_top_k": 4.868588092073536,
+          "win_rate_prob_vs_random": 0.8045977011494253,
+          "mean_score_drop_top_k": 7.552567096013471,
           "ci_score_drop_top_k_95": [
-            4.421782892564957,
-            5.340866352075834
+            7.020526508553132,
+            8.159136662006706
           ],
-          "mean_score_drop_random": 2.66690855602441,
+          "mean_score_drop_random": 4.065861306738683,
           "ci_score_drop_random_95": [
-            2.2878044180574095,
-            3.115349827438857
+            3.4311250947749934,
+            4.822982541384313
           ],
-          "win_rate_score_vs_random": 0.8275862068965517
+          "win_rate_score_vs_random": 0.9540229885057471
         }
       }
     },

@@ -1,11 +1,15 @@
 """Faithfulness and explanation agreement evaluation.
 
 Features:
-- Deletion test across all correctly classified holdout spam emails shared across all 5 models (same n).
+- Deletion test across all correctly classified holdout spam emails shared across all 5 models (n=87).
+- Note: Evaluated on mutual correctly classified test spam emails (n=87) to ensure an identical,
+  controlled comparison set across models, acknowledging this creates an easy-case benchmark bias.
 - Evaluates drop in both predicted spam probability (Delta P) and decision score / log-odds (Delta z).
 - Computes 95% bootstrap confidence intervals for all drops.
-- Evaluates cross-method (Exact vs LIME) and cross-model (Random Forest vs Linear/NB) agreement.
-- Accurately frames hypotheses regarding Naive Bayes log-odds additivity vs probability saturation.
+- Evaluates cross-method (Exact vs LIME) and cross-model (Random Forest vs Linear/NB) agreement on n=20-30
+  emails (limited by LIME simulation cost).
+- Formulates methodological hypotheses regarding Naive Bayes log-odds additivity vs probability saturation,
+  TF-IDF L2 normalization rescaling effects, and LIME surrogate approximations.
 """
 from __future__ import annotations
 
@@ -45,17 +49,25 @@ def bootstrap_ci(arr: List[float], n_boot: int = 1000, ci: float = 0.95, seed: i
 
 
 def delete_tokens_from_text(text: str, tokens: List[str]) -> str:
-    """Remove occurrences of specified unigrams and bigrams from raw text."""
+    """Remove occurrences of specified unigrams and bigrams from raw text.
+
+    For bigrams, matches across arbitrary non-word punctuation (e.g. dots in URLs)
+    and optional intermediate stop words. If an isolated bigram construct fails to
+    match as a contiguous regex, falls back to removing its constituent word to
+    prevent the n-gram from being extracted by TfidfVectorizer.
+    """
     modified = text
     for t in sorted(tokens, key=lambda x: len(x.split()), reverse=True):
         words = t.strip().split()
         if len(words) == 2:
-            pattern = r"\b" + re.escape(words[0]) + r"\s+" + re.escape(words[1]) + r"\b"
+            pat = r"\b" + re.escape(words[0]) + r"\b(?:[^\w]+|\s+\w+){0,3}[^\w]+" + re.escape(words[1]) + r"\b"
+            new_text, n_subs = re.subn(pat, " ", modified, flags=re.IGNORECASE)
+            if n_subs > 0:
+                modified = new_text
+            else:
+                modified = re.sub(r"\b" + re.escape(words[0]) + r"\b", " ", modified, flags=re.IGNORECASE)
         elif len(words) == 1:
-            pattern = r"\b" + re.escape(words[0]) + r"\b"
-        else:
-            continue
-        modified = re.sub(pattern, " ", modified, flags=re.IGNORECASE)
+            modified = re.sub(r"\b" + re.escape(words[0]) + r"\b", " ", modified, flags=re.IGNORECASE)
     return modified
 
 
@@ -207,7 +219,10 @@ def run_method_agreement_evaluation(
     sample_size: int = 30,
     seed: int = 42,
 ) -> Dict[str, Any]:
-    """Evaluate cross-method and cross-model agreement on active unigrams."""
+    """Evaluate cross-method and cross-model agreement on active unigrams.
+
+    Sample size n=20-30 is selected due to computational latency of LIME text perturbations.
+    """
     sample = test_df.sample(sample_size, random_state=seed).reset_index(drop=True)
 
     comparisons: Dict[str, List[Dict[str, float]]] = {
@@ -291,7 +306,6 @@ def _compute_agreement_metrics(
     tokens_a: List[Dict[str, Any]],
     tokens_b: List[Dict[str, Any]],
 ) -> Any:
-    # Filter to unigrams present in both
     dict_a = {t["token"].lower(): t["weight"] for t in tokens_a if len(t["token"].split()) == 1}
     dict_b = {t["token"].lower(): t["weight"] for t in tokens_b if len(t["token"].split()) == 1}
 
@@ -326,7 +340,6 @@ def run_faithfulness_suite(output_dir: Path = EXPLAIN_DIR) -> Dict[str, Any]:
     df, _, test_indices = load_holdout_split()
     test_df = df.iloc[test_indices].reset_index(drop=True)
 
-    # 1. Identify common holdout spam emails correctly predicted by ALL 5 models
     mutual_spam_df = get_mutual_correct_spam(test_df)
     n_common = len(mutual_spam_df)
     print(f"Mutual correctly classified holdout spam emails across all 5 models: n={n_common}")
@@ -377,26 +390,38 @@ def run_faithfulness_suite(output_dir: Path = EXPLAIN_DIR) -> Dict[str, Any]:
 
     full_output = {
         "experimental_setup": {
-            "evaluation_set": "Mutual correctly classified holdout spam emails across all 5 models",
+            "evaluation_set": "Mutual correctly classified holdout spam emails across all 5 models (n=87), noting easy-case benchmark bias",
             "n_emails_per_model": n_common,
             "random_baseline_repeats": 20,
             "bootstrap_ci_level": 0.95,
             "bootstrap_iterations": 1000,
+            "agreement_sample_size_rationale": "Sample size n=20-30 used due to LIME simulation and perturbation computation cost",
             "token_universe_agreement": "active unigrams present in the email recognized by both methods",
         },
         "methodological_hypotheses": {
             "linear_models_circularity": (
-                "For linear models (Logistic Regression, Linear SVM), deletion test is partly circular "
-                "because exact token weights w_j * x_j are closed-form components of the logit. The most "
+                "Hypothesis / property: For linear models (Logistic Regression, Linear SVM), the deletion test is "
+                "partly circular because exact token weights w_j * x_j are closed-form components of the logit. The most "
                 "informative evaluations are therefore LIME vs exact and Random Forest vs the linear models."
             ),
             "naive_bayes_lime_divergence": (
-                "Naive Bayes is strictly additive in log-space (log-odds = b + sum x_j w_j). "
+                "Hypothesis: Naive Bayes is strictly additive in log-space (log-odds = b + sum x_j w_j). "
                 "The lower rank correlation observed between exact NB log-odds and LIME is hypothesized to "
-                "stem from two factors: (1) severe probability saturation/overconfidence in Naive Bayes "
-                "(predict_proba outputs often cluster within 1e-6 of 0 or 1), creating a nearly flat or step-like "
-                "probability surface during LIME random token masking; and (2) objective discrepancy: LIME fits an "
-                "L2-regularized linear surrogate predicting probability shifts, whereas exact attribution decomposes log-odds."
+                "stem from two factors: (1) severe probability saturation in Naive Bayes where posterior probabilities "
+                "cluster within 1e-6 of 0 or 1, producing a step-like probability surface under random token masking; "
+                "and (2) objective discrepancy: LIME fits an L2-regularized linear surrogate predicting probability shifts, "
+                "whereas exact attribution decomposes log-odds."
+            ),
+            "tfidf_l2_rescaling_after_deletion": (
+                "Hypothesis: Deleting tokens from raw text induces TF-IDF L2-normalization rescaling: when a token is removed, "
+                "the document vector norm decreases, mathematically boosting the normalized weights of all remaining terms by "
+                "1 / sqrt(1 - x_deleted^2). In emails with dozens of strong spam features, this rescaling can partially offset "
+                "the drop from removing a single token at k=1."
+            ),
+            "cross_model_tree_discrepancy": (
+                "Hypothesis: Random Forest relies on axis-aligned feature splits and decision paths that can capture nonlinear "
+                "feature interactions. When explained via LIME, its feature attributions moderately correlate with linear models "
+                "(rho ~ 0.46-0.50) but diverge from Complement NB (rho ~ -0.04)."
             ),
         },
         "deletion_tests": deletion_results,

@@ -7,7 +7,7 @@ import pytest
 from src.explain import predict, explain
 from src.explain.faithfulness import delete_tokens_from_text
 from src.explain.local import explain_exact_linear, explain_exact_naive_bayes
-from src.explain.utils import load_model, load_holdout_split
+from src.explain.utils import load_model, load_holdout_split, get_prediction_score_and_prob
 
 ROOT = Path(__file__).resolve().parents[1]
 METRICS_JSON_PATH = ROOT / "reports" / "metrics.json"
@@ -36,6 +36,30 @@ def test_predict_returns_valid_probabilities():
         assert res["label"] in (0, 1)
         assert res["label_name"] in ("ham", "spam")
         assert (res["label"] == 1) == (res["spam_probability"] >= 0.5)
+
+
+def test_exact_explainers_completeness_to_1e9():
+    """Verify intercept + sum(per-token contributions) equals model decision score / log-odds to 1e-9."""
+    df, _, test_idx = load_holdout_split()
+    test_df = df.iloc[test_idx].reset_index(drop=True)
+    sample_emails = test_df.sample(20, random_state=42).text.tolist()
+
+    for model_tag in ["logistic_regression", "linear_svm", "naive_bayes", "complement_nb"]:
+        pipe = load_model(model_tag)
+        for text in sample_emails:
+            _, score_pipe, _ = get_prediction_score_and_prob(pipe, text)
+
+            if model_tag in ("logistic_regression", "linear_svm"):
+                exp = explain_exact_linear(pipe, text, model_tag, top_k=100000)
+            else:
+                exp = explain_exact_naive_bayes(pipe, text, model_tag, top_k=100000)
+
+            score_reconstructed = exp["base_value"] + sum(t["weight"] for t in exp["tokens"])
+            diff = abs(score_reconstructed - score_pipe)
+            assert diff < 1e-9, (
+                f"Completeness violation for {model_tag}: diff={diff:.2e} exceeds 1e-9 limit! "
+                f"Reconstructed: {score_reconstructed}, Pipe: {score_pipe}"
+            )
 
 
 def test_exact_linear_math_identity():
@@ -87,11 +111,12 @@ def test_explain_auto_selects_expected_methods():
 
 def test_delete_tokens_from_text():
     """Verify regex token deletion removes unigrams and bigrams case-insensitively."""
-    text = "Get your free money today. Big discounts on click here links."
-    modified = delete_tokens_from_text(text, ["free", "money", "click here"])
+    text = "Get your free money today. Big discounts on click here links. Visit http://202.101.163.34:81"
+    modified = delete_tokens_from_text(text, ["free", "money", "click here", "101 163"])
     assert "free" not in modified.lower()
     assert "money" not in modified.lower()
     assert "click here" not in modified.lower()
+    assert "101.163" not in modified.lower()
     assert "today" in modified
     assert "discounts" in modified
 
